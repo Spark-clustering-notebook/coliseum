@@ -1,5 +1,5 @@
 # Coliseum
-LIPN docker image for demonstration purpose.
+LIPN CNRS UMR 7030  (https://lipn.univ-paris13.fr/bigdata) docker image for demonstration purpose.
 
 See (https://hub.docker.com/r/spartakus/coliseum/)[https://hub.docker.com/r/spartakus/coliseum/] for online image.
 
