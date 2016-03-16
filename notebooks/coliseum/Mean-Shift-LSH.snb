@@ -1,0 +1,237 @@
+{
+  "metadata" : {
+    "name" : "Mean-Shift-LSH",
+    "user_save_timestamp" : "1970-01-01T00:00:00.000Z",
+    "auto_save_timestamp" : "1970-01-01T00:00:00.000Z",
+    "language_info" : {
+      "name" : "scala",
+      "file_extension" : "scala",
+      "codemirror_mode" : "text/x-scala"
+    },
+    "trusted" : true,
+    "customLocalRepo" : "${HOME}/.ivy2",
+    "customRepos" : null,
+    "customDeps" : [ "spartakus %% neirest-neighbours-mean-shift-lsh % 1.0", "org.apache.sanselan % sanselan % 0.97-incubator" ],
+    "customImports" : null,
+    "customArgs" : null,
+    "customSparkConf" : {
+      "spark.executor.memory" : "1024m",
+      "spark.cassandra.connection.host" : "127.0.0.1",
+      "spark.cores.max" : "2",
+      "spark.executor.cores" : "2",
+      "spark.master" : "local[*]"
+    }
+  },
+  "cells" : [ {
+    "metadata" : {
+      "id" : "40864413B8D34168B2FA7FF90066F6FC"
+    },
+    "cell_type" : "markdown",
+    "source" : "Project: [here](https://github.com/Spark-clustering-notebook/Mean-Shift-LSH)"
+  }, {
+    "metadata" : {
+      "id" : "DE652DD323FF40CE8E4F68F47DF18056"
+    },
+    "cell_type" : "markdown",
+    "source" : "Parameters\n\n* `k` is the number of neighbours to look at in order to compute centroid.\n* `nbseg` is the number of segments on which the data vectors are projected during LSH. Its value should usually be larger than 20, depending on the data set.\n* `nbblocs` is a crucial parameter as larger values give faster but less accurate LSH approximate nearest neighbors, and as smaller values give slower but more accurate approximations.\n* `cmin` is the threshold under which clusters with fewer than cmin members are merged with the next nearest cluster.\n* `normalisation` is a flag if the data should be first normalized $(X-X_{min})/(X_{max}-X_{min})$ before clustering.\n* `w` is a uniformisation constant for LSH.\n* `npPart` is the default parallelism outside the gradient ascent.\n* `yStarIter` is the maximum number of iterations in the gradient ascent in the mean shift update.\n* `threshold_cluster` is the threshold under which two final mean shift iterates are considered to be in the same cluster."
+  }, {
+    "metadata" : {
+      "id" : "D65560046F9348078F2B977ADB1EA284"
+    },
+    "cell_type" : "markdown",
+    "source" : "# Image analysis"
+  }, {
+    "metadata" : {
+      "id" : "ABFE286BC990419686240F2A8CD702B0"
+    },
+    "cell_type" : "markdown",
+    "source" : "To carry out image analysis, it is recommended to convert the usual color formats (e.g. `RGB`, `CYMK`) to the `Luv* color space` as the close values in the Luv-space correspond more to visual perceptions of color proximity, as well adding the row and column indices (x,y). \n\nEach pixel is transformed to a 5-dimensional vector $(x,y,L, u, v)$ which is then input into the mean shift clustering."
+  }, {
+    "metadata" : {
+      "id" : "F8F12109A38B4C328BBA3E1CB3BABEE8"
+    },
+    "cell_type" : "markdown",
+    "source" : "Train on the picture on the [color image #124084](https://www.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/BSDS300/html/dataset/images/color/124084.html) from [Berkeley Segmentation Dataset and Benchmark repository](https://www.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/).\n\n<img src=\"https://www.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/BSDS300/html/images/plain/normal/color/124084.jpg\"/>"
+  }, {
+    "metadata" : {
+      "id" : "A0F0B604F7994E588B7428FBFA5D7E4E"
+    },
+    "cell_type" : "markdown",
+    "source" : "# Build data"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "7F35A36C2A1443848C2B7E341BC7FD1A"
+    },
+    "cell_type" : "code",
+    "source" : "val imgpath = \"/root/data/coliseum/124084-orig.jpg\"",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "663D86D7FF164DC7833801D49DDB5820"
+    },
+    "cell_type" : "code",
+    "source" : "val bni = javax.imageio.ImageIO.read(new File(imgpath))",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "D65BF716451D40CF9010B9D3F094C314"
+    },
+    "cell_type" : "code",
+    "source" : "val h = bni.getHeight\nval w = bni.getWidth",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "BACAFA6383D441B082B381A957BDDC99"
+    },
+    "cell_type" : "code",
+    "source" : "def toLUV(x:Int, y:Int) = {\n  //val xyz = org.apache.commons.imaging.color.ColorConversions.convertRGBtoXYZ(bni.getRGB(x,y))\n  val xyz = org.apache.sanselan.color.ColorConversions.convertRGBtoXYZ(bni.getRGB(x,y))\n  val luv = org.apache.sanselan.color.ColorConversions.convertXYZtoCIELuv(xyz)\n  (x+1, y+1, luv.L, luv.u, luv.v)\n}",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "95DCC9B4242441D687ED7CD609246EB9"
+    },
+    "cell_type" : "code",
+    "source" : "val luvs = for {\n  r <- 0 until h\n  c <- 0 until w\n} yield toLUV(c, r)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "717D6456E89F46F8B62DA04E1A1404FC"
+    },
+    "cell_type" : "code",
+    "source" : "val outputCSV = new File(\"/root/data/coliseum/output/124084-luv.jpg.csv\")\nif (outputCSV.exists) outputCSV.delete",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "D8DBCFFF12EB4A8AB6F98847B19F7E0D"
+    },
+    "cell_type" : "code",
+    "source" : "val w = new java.io.FileWriter(outputCSV)\nw.write(\"\"\" \"x\",\"y\",\"L\",\"u\",\"v\" \"\"\".trim)\nluvs.foreach { case (x, y, l, u, v) =>\n  w.write(s\"\\n$x,$y,$l,$u,$v\")\n}\nw.flush\nw.close",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "523552796BF4454B8A7AE0F5B57A440B"
+    },
+    "cell_type" : "markdown",
+    "source" : "# Restart from received CSV <small>looks like the computed LUV from image aren't matching...</small>"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "2CD1660329D3459AA6A1F460F526E8A0"
+    },
+    "cell_type" : "code",
+    "source" : "val defp = sparkContext.defaultParallelism\nval meanShift = msLsh.MsLsh",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "2DFED1EC049C4E448242E4DAA554953F"
+    },
+    "cell_type" : "code",
+    "source" : "val data = sc.textFile(\"/root/data/coliseum/124084-luv.csv\", defp)//outputCSV.getAbsolutePath,defp)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "FA3F7315EA544FC982FB8ABAB2768B74"
+    },
+    "cell_type" : "code",
+    "source" : "val parsedData = data.filter(!_.startsWith(\"\\\"\")).map(x => x.split(',')).map(y => (y(0),org.apache.spark.mllib.linalg.Vectors.dense(y.tail.map(_.toDouble)))).cache",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "ABF9587DD1C244B18F82B1F2592E1666"
+    },
+    "cell_type" : "code",
+    "source" : "val model = meanShift.train(sparkContext,\n                            parsedData,\n                            k=60,\n                            threshold_cluster=0.05,\n                            yStarIter=10,\n                            cmin=0,\n                            normalisation=true,\n                            w=1,\n                            nbseg=100,\n                            nbblocs=50,\n                            nbPart=defp\n                          )",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "9D93E4989A0C4D6988CB2EC3E119EEB5"
+    },
+    "cell_type" : "markdown",
+    "source" : "Save result for an image as `(ID, Vector, ClusterNumber)`"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "B7CE2DF0FDA947A484CBD24FF2AA1A22"
+    },
+    "cell_type" : "code",
+    "source" : "meanShift.saveImageAnalysis(model, \"/root/data/coliseum/output/MyImageResultDirectory\",1)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "C6AA8685036B4077AAE5B8CE13E0E3CE"
+    },
+    "cell_type" : "markdown",
+    "source" : "Save result as `(ID, ClusterNumber)`"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "811999536B594829A0D8B94633120091"
+    },
+    "cell_type" : "code",
+    "source" : "meanShift.savelabeling(model, \"/root/data/coliseum/output/MyResultDirectory\", 1)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "1AD12FA2A56F419482773192F8FAB395"
+    },
+    "cell_type" : "markdown",
+    "source" : "Save centroids result as `(NumCluster, cardinality, CentroidVector)`"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "72739559D66142618175FE0579C61CC1"
+    },
+    "cell_type" : "code",
+    "source" : "meanShift.saveClusterInfo(sparkContext, model, \"/root/data/coliseum/output/centroidDirectory\")",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
+      "id" : "B1530C4E04E64062A86A97D26C8F8C6C"
+    },
+    "cell_type" : "code",
+    "source" : "",
+    "outputs" : [ ]
+  } ],
+  "nbformat" : 4
+}

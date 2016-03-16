@@ -13,11 +13,15 @@ This uses a variable `LOCAL_NOTEBOOKS` which refers to a local directory contain
 
 Another folder you might want to sync is the data dir, which uses `LOCAL_DATA` then.
 
+Also, it's recommended to use your own ivy repository, especially because some libs aren't available online (like mean shift lsh), hence you can `publishLocal` any libs on the host machine then point you `.ivy2` to the docker container's ones. This will use the `$HOST_REPO`.
+
 
 ```bash
 export LOCAL_NOTEBOOKS=<path to local notebooks dir>
 export LOCAL_DATA=<path to local data dir>
+export HOST_REPO=$(realpath $HOME/.ivy2)
 docker run -v $LOCAL_NOTEBOOKS:/root/spark-notebook/notebooks/coliseum \
+           -v $HOST_REPO:/root/.ivy2 \
            -v $LOCAL_DATA:/root/data/coliseum \
            --rm -it -m 8g \
            -p 19000:9000 \
