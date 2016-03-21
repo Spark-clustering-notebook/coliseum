@@ -93,10 +93,20 @@
       "trusted" : true,
       "input_collapsed" : false,
       "collapsed" : true,
+      "id" : "181C579361B5487A9A4872AB24C68BC7"
+    },
+    "cell_type" : "code",
+    "source" : "import org.apache.sanselan.color.ColorConversions._",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
       "id" : "BACAFA6383D441B082B381A957BDDC99"
     },
     "cell_type" : "code",
-    "source" : "def toLUV(x:Int, y:Int) = {\n  //val xyz = org.apache.commons.imaging.color.ColorConversions.convertRGBtoXYZ(bni.getRGB(x,y))\n  val xyz = org.apache.sanselan.color.ColorConversions.convertRGBtoXYZ(bni.getRGB(x,y))\n  val luv = org.apache.sanselan.color.ColorConversions.convertXYZtoCIELuv(xyz)\n  (x+1, y+1, luv.L, luv.u, luv.v)\n}",
+    "source" : "def toLUV(bni:java.awt.image.BufferedImage, x:Int, y:Int) = {\n  //val xyz = org.apache.commons.imaging.color.ColorConversions.convertRGBtoXYZ(bni.getRGB(x,y))\n  val xyz = convertRGBtoXYZ(bni.getRGB(x,y))\n  val luv = convertXYZtoCIELuv(xyz)\n  (x+1, y+1, luv.L, luv.u, luv.v)\n}\ndef toRGB(L:Double, u:Double, v:Double) = {\n  val xyz = convertCIELuvtoXYZ(L, u, v)\n  val rgb = convertXYZtoRGB(xyz)\n  rgb\n}",
     "outputs" : [ ]
   }, {
     "metadata" : {
@@ -106,7 +116,7 @@
       "id" : "95DCC9B4242441D687ED7CD609246EB9"
     },
     "cell_type" : "code",
-    "source" : "val luvs = for {\n  r <- 0 until h\n  c <- 0 until w\n} yield toLUV(c, r)",
+    "source" : "val luvs = for {\n  r <- 0 until h\n  c <- 0 until w\n} yield toLUV(bni, c, r)",
     "outputs" : [ ]
   }, {
     "metadata" : {
@@ -126,7 +136,7 @@
       "id" : "D8DBCFFF12EB4A8AB6F98847B19F7E0D"
     },
     "cell_type" : "code",
-    "source" : "val w = new java.io.FileWriter(outputCSV)\nw.write(\"\"\" \"x\",\"y\",\"L\",\"u\",\"v\" \"\"\".trim)\nluvs.foreach { case (x, y, l, u, v) =>\n  w.write(s\"\\n$x,$y,$l,$u,$v\")\n}\nw.flush\nw.close",
+    "source" : "val writer = new java.io.FileWriter(outputCSV)\nwriter.write(\"\"\" \"x\",\"y\",\"L\",\"u\",\"v\" \"\"\".trim)\nluvs.foreach { case (x, y, l, u, v) =>\n  writer.write(s\"\\n$x,$y,$l,$u,$v\")\n}\nwriter.flush\nwriter.close",
     "outputs" : [ ]
   }, {
     "metadata" : {
@@ -162,13 +172,33 @@
       "id" : "FA3F7315EA544FC982FB8ABAB2768B74"
     },
     "cell_type" : "code",
-    "source" : "val parsedData = data.filter(!_.startsWith(\"\\\"\")).map(x => x.split(','))\n                     .map(y => org.apache.spark.mllib.linalg.Vectors.dense(y.tail.map(_.toDouble)))\n                     .zipWithIndex.map(_.swap)\n                     .map(x => (x._1.toString, x._2)).cache",
+    "source" : "val parsedData = data.filter(!_.startsWith(\"\\\"\")).map(x => x.split(','))\n                     .map(y => org.apache.spark.mllib.linalg.Vectors.dense(y.map(_.toDouble)))\n                     .zipWithIndex.map(_.swap)\n                     .map(x => (x._1.toString, x._2)).cache",
     "outputs" : [ ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : false,
+      "collapsed" : true,
+      "id" : "0EDDEECCF3A6430498B5359548AFF624"
+    },
+    "cell_type" : "code",
+    "source" : "val sqlc = new org.apache.spark.sql.SQLContext(sparkContext)\nimport sqlc.implicits._",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
+      "id" : "E77754F4948E418180CDE925893AFF8F"
+    },
+    "cell_type" : "code",
+    "source" : "parsedData.toDF",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
       "id" : "ABF9587DD1C244B18F82B1F2592E1666"
     },
     "cell_type" : "code",
@@ -184,11 +214,31 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : false,
+      "collapsed" : true,
+      "id" : "05F298A3A56B4057AA2DC835C10DA548"
+    },
+    "cell_type" : "code",
+    "source" : "val imageResultPath = \"/root/data/coliseum/output/MyImageResultDirectory\"",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
+      "id" : "006C9B792A1C45BCBF71787290833C1A"
+    },
+    "cell_type" : "code",
+    "source" : ":sh rm -rf $imageResultPath",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
       "id" : "B7CE2DF0FDA947A484CBD24FF2AA1A22"
     },
     "cell_type" : "code",
-    "source" : "// Results look's like RDD[ID,Centroïd_Vector,cluster_Number]\nmeanShift.saveImageAnalysis(model, \"/root/data/coliseum/output/MyImageResultDirectory\",1)",
+    "source" : "// Results look's like RDD[ID,Centroïd_Vector,cluster_Number]\nmeanShift.saveImageAnalysis(model, imageResultPath,1)",
     "outputs" : [ ]
   }, {
     "metadata" : {
@@ -200,11 +250,31 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : false,
+      "collapsed" : true,
+      "id" : "9F4361C151AE441A9E58F50698889601"
+    },
+    "cell_type" : "code",
+    "source" : "val resultDirPath = \"/root/data/coliseum/output/MyResultDirectory\"",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
+      "id" : "94B903E6D54340158F4790457AD85918"
+    },
+    "cell_type" : "code",
+    "source" : ":sh rm -rf $resultDirPath ",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
       "id" : "811999536B594829A0D8B94633120091"
     },
     "cell_type" : "code",
-    "source" : "meanShift.savelabeling(model, \"/root/data/coliseum/output/MyResultDirectory\", 1)",
+    "source" : "meanShift.savelabeling(model, resultDirPath, 1)",
     "outputs" : [ ]
   }, {
     "metadata" : {
@@ -216,11 +286,31 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : false,
+      "collapsed" : true,
+      "id" : "C11E5610C37042418035E3F5ED71A8EA"
+    },
+    "cell_type" : "code",
+    "source" : "val centroidDirPath = \"/root/data/coliseum/output/centroidDirectory\"",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
+      "id" : "D5BC944A011748F2BC9C4D45BBDAB437"
+    },
+    "cell_type" : "code",
+    "source" : ":sh rm -rf $centroidDirPath",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
       "id" : "72739559D66142618175FE0579C61CC1"
     },
     "cell_type" : "code",
-    "source" : "meanShift.saveClusterInfo(sparkContext, model, \"/root/data/coliseum/output/centroidDirectory\")",
+    "source" : "meanShift.saveClusterInfo(sparkContext, model, centroidDirPath)",
     "outputs" : [ ]
   }, {
     "metadata" : {
@@ -232,27 +322,17 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : false,
+      "collapsed" : true,
       "id" : "B1530C4E04E64062A86A97D26C8F8C6C"
     },
     "cell_type" : "code",
-    "source" : "val resultImage = sparkContext.textFile(\"/root/data/coliseum/output/MyImageResultDirectory\")",
+    "source" : "val resultImage = sparkContext.textFile(imageResultPath)",
     "outputs" : [ ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : false,
-      "id" : "E76F0B0D2D2840C58D5EEA121B17DA8F"
-    },
-    "cell_type" : "code",
-    "source" : "resultImage.first.replaceAll(\",\", \",\\t\")",
-    "outputs" : [ ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
+      "collapsed" : true,
       "id" : "F0DC0A6BE8804CBE8965CF3316897322"
     },
     "cell_type" : "code",
@@ -262,35 +342,31 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : false,
-      "id" : "0EDDEECCF3A6430498B5359548AFF624"
-    },
-    "cell_type" : "code",
-    "source" : "val sqlc = new org.apache.spark.sql.SQLContext(sparkContext)\nimport sqlc.implicits._",
-    "outputs" : [ ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
+      "collapsed" : true,
       "id" : "BAE857AA59F5410881C8068F01AA57C0"
     },
     "cell_type" : "code",
-    "source" : "parsed.toDF.orderBy(\"_3\")",
+    "source" : "val parsedDf = parsed.toDF",
     "outputs" : [ ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
       "collapsed" : false,
-      "presentation" : {
-        "tabs_state" : "{\n  \"tab_id\": \"#tab595832521-1\"\n}",
-        "pivot_chart_state" : "{\n  \"hiddenAttributes\": [],\n  \"menuLimit\": 200,\n  \"cols\": [],\n  \"rows\": [],\n  \"vals\": [],\n  \"exclusions\": {},\n  \"inclusions\": {},\n  \"unusedAttrsVertical\": 85,\n  \"autoSortUnusedAttrs\": false,\n  \"inclusionsInfo\": {},\n  \"aggregatorName\": \"Count\",\n  \"rendererName\": \"Table\"\n}"
-      },
-      "id" : "674291206C3A41658C7AA5AD746A63C2"
+      "id" : "F8F0FCD397814AF28F38672606E1D82A"
     },
     "cell_type" : "code",
-    "source" : "res42.select(\"_3\").distinct.orderBy(\"_3\").collect.toList",
+    "source" : "val resArr = parsedDf.select(\"_2\").map(_.getAs[org.apache.spark.mllib.linalg.Vector](0)).map(_.toArray.toList).collect\nval resList = resArr.toList",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "3C01A0A3F16E42EC93CF94D87DEA3878"
+    },
+    "cell_type" : "code",
+    "source" : "import java.awt.image.BufferedImage\nval resImg = new BufferedImage(h, w, BufferedImage.TYPE_INT_RGB)\nval rbgs:Array[Int] = resArr.map{ case List(_, _, l, u, v) => toRGB(l, u, v) }.toArray\nresImg.setRGB(0, 0, h, w, rbgs, 0, h)\nval ii = img(\"jpg\", h+\"px\", w+\"px\")\nii(resImg)\nii",
     "outputs" : [ ]
   } ],
   "nbformat" : 4
