@@ -8,6 +8,24 @@ See (https://hub.docker.com/r/spartakus/coliseum/) for online image.
 docker build -t spartakus/coliseum:0.0.1 .
 ```
 
+## Dependencies
+Until libraries are deployed publicly, we'll have to build them locally in 
+* ivy2 if scala 2.10
+* m2 if scala 2.11
+
+Then refer them from the notebooks using the artifact id in the metadata, and we mount the local repository in the docker container (see below section).
+
+### Deploy dependencies
+#### Mean-Shift LSH
+
+```sh
+git clone git@github.com:Spark-clustering-notebook/Mean-Shift-LSH.git
+cd Mean-Shift-LSH
+sbt publishM2
+sbt publishLocal
+```
+
+
 ## Run
 This uses a variable `LOCAL_NOTEBOOKS` which refers to a local directory containing the notebooks you want to include and keep up to date during the session.
 
