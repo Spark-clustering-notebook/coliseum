@@ -60,4 +60,4 @@ Open browser at [http://localhost:19000/tree/coliseum](http://localhost:19000/tr
 
 > WARN:
 > 
-> If you're running docker via a VM (Mac, Msft, ...) then you need to replace `localhost` by the VM's IP.
+> If you're running docker via a VM (Mac, Msft, ...) then you need to replace `localhost` by the VM's IP (>boot2docker  ip).
