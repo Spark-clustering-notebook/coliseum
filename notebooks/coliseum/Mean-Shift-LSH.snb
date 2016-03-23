@@ -11,7 +11,7 @@
     "trusted" : true,
     "customLocalRepo" : "${HOME}/.ivy2",
     "customRepos" : null,
-    "customDeps" : [ "org.apache.sanselan % sanselan % 0.97-incubator" ],
+    "customDeps" : [ "spartakus %% neirest-neighbours-mean-shift-lsh % 1.0", "org.apache.sanselan % sanselan % 0.97-incubator" ],
     "customImports" : null,
     "customArgs" : null,
     "customSparkConf" : {
