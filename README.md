@@ -1,5 +1,5 @@
 # Coliseum
-LIPN CNRS UMR 7030  (https://lipn.univ-paris13.fr/bigdata) docker image for demonstration purpose.
+LIPN CNRS UMR 7030  (https://github.com/Spark-clustering-notebook/coliseum/wiki) docker image for demonstration purpose.
 
 See (https://hub.docker.com/r/spartakus/coliseum/) for online image.
 
@@ -64,4 +64,4 @@ Open browser at [http://localhost:19000/tree/coliseum](http://localhost:19000/tr
 
 > WARN:
 > 
-> If you're running docker via a VM (Mac, Msft, ...) then you need to replace `localhost` by the VM's IP.
+> If you're running docker via a VM (Mac, Msft, ...) then you need to replace `localhost` by the VM's IP (>boot2docker  ip).
