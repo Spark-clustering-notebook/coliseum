@@ -17,10 +17,13 @@ Then refer them from the notebooks using the artifact id in the metadata, and we
 
 ### Deploy dependencies
 #### Mean-Shift LSH
+On the host machine (that runs docker), we need to deploy the dependency locally, then we'll make it available in docker (using folder mounting).
+
 
 ```sh
-git clone git@github.com:Spark-clustering-notebook/Mean-Shift-LSH.git
+git clone https://github.com/Spark-clustering-notebook/Mean-Shift-LSH.git
 cd Mean-Shift-LSH
+git checkout spark-1.6 # unless https://github.com/Spark-clustering-notebook/Mean-Shift-LSH/pull/1 is merged
 sbt publishM2
 sbt publishLocal
 ```
@@ -38,7 +41,8 @@ Also, it's recommended to use your own ivy repository, especially because some l
 export LOCAL_NOTEBOOKS=<path to local notebooks dir>
 export LOCAL_DATA=<path to local data dir>
 export HOST_REPO=$(realpath $HOME/.ivy2)
-docker run -v $LOCAL_NOTEBOOKS:/root/spark-notebook/notebooks/coliseum \
+docker run \
+           -v $LOCAL_NOTEBOOKS:/root/spark-notebook/notebooks/coliseum \
            -v $HOST_REPO:/root/.ivy2 \
            -v $LOCAL_DATA:/root/data/coliseum \
            --rm -it -m 8g \
