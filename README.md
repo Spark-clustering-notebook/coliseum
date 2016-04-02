@@ -28,6 +28,16 @@ sbt publishM2
 sbt publishLocal
 ```
 
+#### G-Stream
+
+```sh
+git clone https://github.com/Spark-clustering-notebook/G-stream.git
+cd G-stream
+git checkout sbt-bump-spark # unless https://github.com/Spark-clustering-notebook/G-stream/pull/1
+sbt publishM2
+sbt publishLocal
+```
+
 
 ## Run
 This uses a variable `LOCAL_NOTEBOOKS` which refers to a local directory containing the notebooks you want to include and keep up to date during the session.

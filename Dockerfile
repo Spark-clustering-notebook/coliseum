@@ -48,10 +48,10 @@ RUN \
  && rm sbt-0.13.8.tgz
 
 
-# Spark Notebook: 0.6.3 default scala 2.10 spark 1.6.0 hadoop 2.2.0 + hive + parquet, guava 16.0.1 for cassandra connector
+# Spark Notebook: 0.7.0-SNAPSHOT default scala 2.10 spark 1.6.0 hadoop 2.2.0 + hive + parquet, guava 16.0.1 for cassandra connector
 RUN \
  cd /root \
- && wget https://s3-eu-west-1.amazonaws.com/data-fellas-coliseum/spark-notebook-0.6.3-scala-2.10.5-spark-1.6.0-hadoop-2.2.0-with-hive-with-parquet.tgz \
+ && wget https://s3-eu-west-1.amazonaws.com/data-fellas-coliseum/spark-notebook-0.7.0-SNAPSHOT-scala-2.10.5-spark-1.6.0-hadoop-2.2.0-with-hive-with-parquet.tgz \
  && tar xvzf spark-notebook-*tgz --warning=no-timestamp \
  && rm spark-notebook-*tgz \
  && mv spark-notebook-* spark-notebook
