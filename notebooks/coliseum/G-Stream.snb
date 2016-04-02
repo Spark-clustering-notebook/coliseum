@@ -18,25 +18,32 @@
   },
   "cells" : [ {
     "metadata" : {
+      "id" : "9EBF902FB8814B00BD98CBC56AFC659E"
+    },
+    "cell_type" : "markdown",
+    "source" : "# G-Stream"
+  }, {
+    "metadata" : {
+      "id" : "F373CD8BA9AA412E8E0F8E268A547BFD"
+    },
+    "cell_type" : "markdown",
+    "source" : "Defining the few data folders and data files needed for the experiment."
+  }, {
+    "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
       "collapsed" : false,
       "id" : "C249EBAC9D6E415299662EAEFD02E355"
     },
     "cell_type" : "code",
-    "source" : "val dataDir = \"/home/noootsab/Downloads/gstream\"\nval expDir = dataDir + \"/exp\"\nval dataFile = dataDir + \"/DS1.txt\"\nval outputDir = sys.props(\"java.io.tmpdir\") + \"/gstream\"+java.util.UUID.randomUUID.toString",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "dataDir: String = /home/noootsab/Downloads/gstream\nexpDir: String = /home/noootsab/Downloads/gstream/exp\ndataFile: String = /home/noootsab/Downloads/gstream/DS1.txt\noutputDir: String = /tmp/gstreama0bddd7f-1ca1-4bc4-a70c-03e9155f8179\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 1
-    } ]
+    "source" : "val dataDir = \"/root/data/coliseum\"\nval dataFile = dataDir + \"/DS1.txt\"\nval expDir = sys.props(\"java.io.tmpdir\") + \"/exp\"\nval outputDir = sys.props(\"java.io.tmpdir\") + \"/gstream\"+java.util.UUID.randomUUID.toString",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "FD38C2747957405C8F2852F6F1D8FEA4"
+    },
+    "cell_type" : "markdown",
+    "source" : "Clean up the experiment."
   }, {
     "metadata" : {
       "trusted" : true,
@@ -45,19 +52,14 @@
       "id" : "2CE0313D1295479DBBACE9784A8330E0"
     },
     "cell_type" : "code",
-    "source" : "new java.io.File(expDir).listFiles.foreach(_.delete)\nnew java.io.File(expDir).mkdirs\nnew java.io.File(outputDir).mkdirs",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "res7: Boolean = true\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : "true"
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 6
-    } ]
+    "source" : "new java.io.File(expDir).mkdirs\nnew java.io.File(expDir).listFiles.foreach(_.delete)\nnew java.io.File(outputDir).mkdirs",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "5F55302A94404435881A7F7A09C4D7B8"
+    },
+    "cell_type" : "markdown",
+    "source" : "Counter of data files, used in names"
   }, {
     "metadata" : {
       "trusted" : true,
@@ -67,18 +69,13 @@
     },
     "cell_type" : "code",
     "source" : "var dataCount = 0",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "dataCount: Int = 0\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 7
-    } ]
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "0B062542990D4AE79B3D39DABABF6990"
+    },
+    "cell_type" : "markdown",
+    "source" : "Initialize the experiment: create data source as a stream of lines and create first file with 2 clusters."
   }, {
     "metadata" : {
       "trusted" : true,
@@ -88,18 +85,13 @@
     },
     "cell_type" : "code",
     "source" : "import sys.process._\nval w = new java.io.FileWriter(new java.io.File(s\"$expDir/data$dataCount\"))\nval dataSource = scala.io.Source.fromFile(dataFile).getLines\ndataSource.take(2).foreach(l => w.write(l + \"\\n\"))\nw.close",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "import sys.process._\nw: java.io.FileWriter = java.io.FileWriter@5467be6a\ndataSource: Iterator[String] = non-empty iterator\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 8
-    } ]
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "E36D71F01B4544559E23C3CCF3462E1B"
+    },
+    "cell_type" : "markdown",
+    "source" : "Helper to create new data file based on original data source"
   }, {
     "metadata" : {
       "trusted" : true,
@@ -109,18 +101,13 @@
     },
     "cell_type" : "code",
     "source" : "val nbLines = 10\nimport scala.concurrent.Future\nimport scala.concurrent.ExecutionContext.Implicits.global\n\ndef newData(lines:Iterator[String], dc:Int) = Future {\n  val tmp = java.io.File.createTempFile(\"data\", \"\")\n  val w = new java.io.FileWriter(tmp)\n  println(tmp.getAbsolutePath)\n  val d = new java.io.File(s\"$expDir/data$dc\")\n  println(d.getAbsolutePath)\n  lines.take(nbLines).foreach(l => w.write(l + \"\\n\"))\n  w.close\n  val mv = s\"mv ${tmp.getAbsolutePath} ${d.getAbsolutePath}\"\n  println(mv)\n  mv.!!\n  val touch = s\"touch ${d.getAbsolutePath}\"\n  touch.!!\n  d.getAbsolutePath\n}",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "nbLines: Int = 10\nimport scala.concurrent.Future\nimport scala.concurrent.ExecutionContext.Implicits.global\nnewData: (lines: Iterator[String], dc: Int)scala.concurrent.Future[String]\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 9
-    } ]
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "F238AAB8D22A470485F0A8116AA55D52"
+    },
+    "cell_type" : "markdown",
+    "source" : "Logger for the created files."
   }, {
     "metadata" : {
       "trusted" : true,
@@ -129,19 +116,14 @@
       "id" : "013BAEAE191C4C8C8FAB5F8F4F30D67B"
     },
     "cell_type" : "code",
-    "source" : "val dataFiles = ul(10)\ndataFiles",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "dataFiles: notebook.front.DataConnectedWidget[String]{implicit val singleCodec: notebook.Codec[play.api.libs.json.JsValue,String]; def data: Seq[String]; def data_=(x$1: Seq[String]): Unit; lazy val toHtml: scala.xml.Elem; def append(s: String): Unit; def appendAll(s: Seq[String]): Unit} = <anon$1 widget>\nres13: notebook.front.DataConnectedWidget[String]{implicit val singleCodec: notebook.Codec[play.api.libs.json.JsValue,String]; def data: Seq[String]; def data_=(x$1: Seq[String]): Unit; lazy val toHtml: scala.xml.Elem; def append(s: String): Unit; def appendAll(s: Seq[String]): Unit} = <anon$1 widget>\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : "<ul data-bind=\"foreach: value\">\n      <li data-bind=\"html: $data\"></li><script data-this=\"{&quot;valueId&quot;:&quot;anonf97ecb5aefc197e89e937931bd3dc726&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/\nreq(\n['observable', 'knockout'],\nfunction (O, ko) {\n  ko.applyBindings({\n      value: O.makeObservable(valueId)\n    },\n    this\n  );\n});\n          /*]]>*/</script></ul>"
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 10
-    } ]
+    "source" : "val dataFiles = ul(10)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "2CC34F707EEE47B3B049D7B9B58BC9ED"
+    },
+    "cell_type" : "markdown",
+    "source" : "Async loop to create data file, with two controllers (start and stop)"
   }, {
     "metadata" : {
       "trusted" : true,
@@ -150,19 +132,14 @@
       "id" : "592209194DF94E6E8D5D8CC2F984EC73"
     },
     "cell_type" : "code",
-    "source" : "val sleepTime = 5000L\n@volatile var stop = false\n\ndef next:Future[Unit] = Future {\n  dataCount += 1\n  val n = newData(dataSource, dataCount)\n  n foreach (f => dataFiles.append(f))\n  if (dataSource.hasNext && !stop) {\n    Thread.sleep(sleepTime)\n    next\n  } else {\n    n\n  }\n  ()\n}\ndef startCreateData = { stop = false; next }\ndef stopCreateData = { stop = true }",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "sleepTime: Long = 5000\nstop: Boolean = false\nnext: scala.concurrent.Future[Unit]\nstartCreateData: scala.concurrent.Future[Unit]\nstopCreateData: Unit\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 11
-    } ]
+    "source" : "@volatile var sleepTime = 5000L\n@volatile var stop = false\n\ndef next:Future[Unit] = Future {\n  dataCount += 1\n  val n = newData(dataSource, dataCount)\n  n foreach (f => dataFiles.append(f))\n  if (dataSource.hasNext && !stop) {\n    Thread.sleep(sleepTime)\n    next\n  } else {\n    n\n  }\n  ()\n}\ndef startCreateData = { stop = false; next }\ndef stopCreateData = { stop = true }",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "988057FAF2344618821F64D1F801A280"
+    },
+    "cell_type" : "markdown",
+    "source" : "Logger for the last data points"
   }, {
     "metadata" : {
       "trusted" : true,
@@ -171,19 +148,14 @@
       "id" : "08882AC25ACD46C99E9AC7337DD02937"
     },
     "cell_type" : "code",
-    "source" : "val datalist = ul(10)\ndatalist",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "datalist: notebook.front.DataConnectedWidget[String]{implicit val singleCodec: notebook.Codec[play.api.libs.json.JsValue,String]; def data: Seq[String]; def data_=(x$1: Seq[String]): Unit; lazy val toHtml: scala.xml.Elem; def append(s: String): Unit; def appendAll(s: Seq[String]): Unit} = <anon$1 widget>\nres16: notebook.front.DataConnectedWidget[String]{implicit val singleCodec: notebook.Codec[play.api.libs.json.JsValue,String]; def data: Seq[String]; def data_=(x$1: Seq[String]): Unit; lazy val toHtml: scala.xml.Elem; def append(s: String): Unit; def appendAll(s: Seq[String]): Unit} = <anon$1 widget>\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : "<ul data-bind=\"foreach: value\">\n      <li data-bind=\"html: $data\"></li><script data-this=\"{&quot;valueId&quot;:&quot;anon8862572203f27a608b16fd70b5fa5353&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/\nreq(\n['observable', 'knockout'],\nfunction (O, ko) {\n  ko.applyBindings({\n      value: O.makeObservable(valueId)\n    },\n    this\n  );\n});\n          /*]]>*/</script></ul>"
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 12
-    } ]
+    "source" : "val datalist = ul(10)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "8A0487F51BC04912905C644109712FC4"
+    },
+    "cell_type" : "markdown",
+    "source" : "Create the streaming context in a `var` so we could restart the process without closing the spark context (link to cluster)"
   }, {
     "metadata" : {
       "trusted" : true,
@@ -193,39 +165,13 @@
     },
     "cell_type" : "code",
     "source" : "import org.apache.spark.streaming.{Seconds, StreamingContext, Milliseconds}\n@transient var ssc:StreamingContext = _",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "import org.apache.spark.streaming.{Seconds, StreamingContext, Milliseconds}\nssc: org.apache.spark.streaming.StreamingContext = null\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 13
-    } ]
+    "outputs" : [ ]
   }, {
     "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
-      "id" : "42D8517A895344DE8C5F72AF3775F055"
+      "id" : "8518DFDF99DA4F528E451AA4C2243C80"
     },
-    "cell_type" : "code",
-    "source" : "val points2 = sc.textFile(s\"$expDir/data0\").map(x => x.split(\",\").map(_.toDouble))\nval labId = 2 //TODO: change -1 to -2 when you add the id to the file (last column) //-2 because the last 2 columns represent label & id\nval dim = points2.take(1)(0).size - labId",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "points2: org.apache.spark.rdd.RDD[Array[Double]] = MapPartitionsRDD[4] at map at <console>:72\nlabId: Int = 2\ndim: Int = 2\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 14
-    } ]
+    "cell_type" : "markdown",
+    "source" : "Creating a form with default parameter to run the experiment, you'll need to **click on Apply** to start creating the files in the experiment and to start training the model on the incoming data.\n\nWhen it'll start we'll also display the files last that were created and the last data points."
   }, {
     "metadata" : {
       "trusted" : true,
@@ -234,91 +180,14 @@
       "id" : "097E5B7A679C47D38F8A012E93B7907A"
     },
     "cell_type" : "code",
-    "source" : "val initConf = Map(\"dirData\"      → dataDir,\n                    \"dirSortie\"    → outputDir,\n                    \"DSname\"       → \"dsname\",\n                    \"separator\"    → \",\",\n                    \"decayFactor\"  → \"0.9\",\n                    \"lambdaAge\"    → \"1.2\",\n                    \"nbNodesToAdd\" → \"3\",\n                    \"nbWind\"       → \"5\", // in 1 to 9?\n                    \"intervalMs\"   → \"10000\")\n\nForm[Map[String, String]](\n  d = initConf, \n  mainTitle = \"Configure the experiment\",\n  paramsToData = identity[Map[String,String]], \n  dataToParams = identity[Map[String,String]]\n) { m =>\n  stopCreateData\n  \n  import org.lipn.clustering.batchStream.batchStream\n  \n  StreamingContext.getActive.foreach(_.stop(false))\n  \n  ssc = new StreamingContext(sparkContext, Milliseconds(m(\"intervalMs\").toInt))\n  \n  val separator = m(\"separator\")\n  val decayFactor = m(\"decayFactor\").toDouble\n  val lambdaAge = m(\"lambdaAge\").toDouble\n  val nbNodesToAdd = m(\"nbNodesToAdd\").toInt\n  val nbWind = m(\"nbWind\").toInt\n  val DSname = m(\"DSname\")\n\n  // 'points2' contains the first two data-points used for initialising the model\n  @transient val points2 = sc.textFile(s\"$expDir/data0\").map(x => x.split(separator).map(_.toDouble))\n\n  // Create a DStreams that reads batch files from dirData\n  @transient val stream = ssc.textFileStream(expDir).map(x => x.split(separator).map(_.toDouble))\n  // Create a DStreams that will connect to a socket hostname:port\n  //val stream = ssc.socketTextStream(\"localhost\", 9999).map(x => x.split(separator).map(_.toDouble)) //localhost or 10.32.2.153 for Teralab\n\n  stream.foreachRDD{r => \n                    val d = r.take(10).map(_.toList.toString)\n                    datalist.appendAll(d)\n                   }  \n  val labId = 2 //TODO: change -1 to -2 when you add the id to the file (last column) //-2 because the last 2 columns represent label & id\n  val dim = points2.take(1)(0).size - labId\n  @transient var gstream = new batchStream()\n                            .setDecayFactor(decayFactor)\n                            .setLambdaAge(lambdaAge)\n                            .setMaxInsert(nbNodesToAdd)\n\n  // converting each point into an object\n  @transient val dstreamObj = stream.map( e =>\n    gstream.model.pointToObjet(e, dim, labId)\n  )\n\n  // dstreamObj.cache() //TODO: to save in memory\n\n  // initialization of the model by creating a graph of two nodes (the first 2 data-points)\n  gstream.initModelObj(points2, dim)\n\n  // training on the model\n  gstream.trainOnObj(dstreamObj, gstream, outputDir+\"/\"+DSname+\"-\"+nbNodesToAdd, dim, nbWind)\n\n  startCreateData\n  \n  ssc.start()\n}",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "initConf: scala.collection.immutable.Map[String,String] = Map(dirData -> /home/noootsab/Downloads/gstream, nbWind -> 5, DSname -> dsname, intervalMs -> 10000, decayFactor -> 0.9, separator -> ,, nbNodesToAdd -> 3, dirSortie -> /tmp/gstreama0bddd7f-1ca1-4bc4-a70c-03e9155f8179, lambdaAge -> 1.2)\nres20: notebook.front.widgets.Form[Map[String,String]] = <anon$1 widget>\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : "<div><script data-this=\"{&quot;valueId&quot;:&quot;anon6f8f4b047cbcbeba8696a498238cad03&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/req(\n          ['observable', 'knockout', 'jquery'],\n          function (Observable, ko, $) {\n            var value = Observable.makeObservable(valueId);\n            var publishFormData = function(form) {\n              var r = $(form).serializeArray();\n              var result = {};\n              r.forEach(function(o) {\n                result[o.name] = o.value;\n              });\n              value(result);\n            };\n            var addEntry = function(form) {\n              var entry = $(form).serializeArray()[0];\n              $(\"#_43136cff_6195_4145_8172_ab92aabbc94e\").find(\"button\")\n                                     .before(\"<div class='form-group'><label for-name='\"+entry.value+\"'>\"+entry.value+\"</label><input class='form-control' name='\"+entry.value+\"' value=''/></div>\")\n            };\n            ko.applyBindings({\n              formShown:        ko.observable(true),\n              value:            value,\n              publishFormData:  publishFormData,\n              addEntry:         addEntry\n            }, this);\n          }\n        )/*]]>*/</script>\n    <span class=\"help-block\">\n      <input type=\"checkbox\" data-bind=\"checked: formShown\"/><strong>Configure the experiment</strong>\n    </span>\n    <div data-bind=\"if: formShown\">\n      <form role=\"form\" id=\"_43136cff_6195_4145_8172_ab92aabbc94e\" data-bind=\"submit: publishFormData\">\n        <div class=\"form-group\">\n              <label for-name=\"dirData\">dirData</label>\n              <input name=\"dirData\" value=\"/home/noootsab/Downloads/gstream\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"nbWind\">nbWind</label>\n              <input name=\"nbWind\" value=\"5\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"DSname\">DSname</label>\n              <input name=\"DSname\" value=\"dsname\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"intervalMs\">intervalMs</label>\n              <input name=\"intervalMs\" value=\"10000\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"decayFactor\">decayFactor</label>\n              <input name=\"decayFactor\" value=\"0.9\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"separator\">separator</label>\n              <input name=\"separator\" value=\",\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"nbNodesToAdd\">nbNodesToAdd</label>\n              <input name=\"nbNodesToAdd\" value=\"3\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"dirSortie\">dirSortie</label>\n              <input name=\"dirSortie\" value=\"/tmp/gstreama0bddd7f-1ca1-4bc4-a70c-03e9155f8179\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"lambdaAge\">lambdaAge</label>\n              <input name=\"lambdaAge\" value=\"1.2\" class=\"form-control\"/>\n            </div>\n        <button type=\"submit\" class=\"btn btn-default\">Apply</button>\n      </form>\n      <form data-bind=\"submit: addEntry\" role=\"form\" class=\"hide\">\n        <div class=\"form-group\">\n          <label for-name=\"add-entry\">Add entry</label>\n          <input name=\"add-entry\" class=\"form-control\" type=\"text\"/>\n        </div>\n        <button type=\"submit\" class=\"btn btn-default\">Add</button>\n      </form>\n    </div>\n  </div>"
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 15
-    } ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : true,
-      "id" : "555135BC86E5451C9A87B461A0A689CB"
-    },
-    "cell_type" : "code",
-    "source" : "",
+    "source" : "val initConf = Map(\"dirData\"      → dataDir,\n                    \"dirSortie\"    → outputDir,\n                    \"DSname\"       → \"dsname\",\n                    \"separator\"    → \",\",\n                    \"decayFactor\"  → \"0.9\",\n                    \"lambdaAge\"    → \"1.2\",\n                    \"nbNodesToAdd\" → \"3\",\n                    \"nbWind\"       → \"5\", // in 1 to 9?\n                    \"intervalMs\"   → \"10000\")\n\nval form = Form[Map[String, String]](\n  d = initConf, \n  mainTitle = \"Configure the experiment\",\n  paramsToData = identity[Map[String,String]], \n  dataToParams = identity[Map[String,String]]\n) { m =>\n  stopCreateData\n  \n  import org.lipn.clustering.batchStream.batchStream\n  \n  StreamingContext.getActive.foreach(_.stop(false))\n  \n  ssc = new StreamingContext(sparkContext, Milliseconds(m(\"intervalMs\").toInt))\n  \n  val separator = m(\"separator\")\n  val decayFactor = m(\"decayFactor\").toDouble\n  val lambdaAge = m(\"lambdaAge\").toDouble\n  val nbNodesToAdd = m(\"nbNodesToAdd\").toInt\n  val nbWind = m(\"nbWind\").toInt\n  val DSname = m(\"DSname\")\n\n  // 'points2' contains the first two data-points used for initialising the model\n  @transient val points2 = sc.textFile(s\"$expDir/data0\").map(x => x.split(separator).map(_.toDouble))\n\n  // Create a DStreams that reads batch files from dirData\n  @transient val stream = ssc.textFileStream(expDir).map(x => x.split(separator).map(_.toDouble))\n  // Create a DStreams that will connect to a socket hostname:port\n  //val stream = ssc.socketTextStream(\"localhost\", 9999).map(x => x.split(separator).map(_.toDouble)) //localhost or 10.32.2.153 for Teralab\n\n  stream.foreachRDD{r => \n                    val d = r.take(10).map(_.toList.toString)\n                    datalist.appendAll(d)\n                   }  \n  val labId = 2 //TODO: change -1 to -2 when you add the id to the file (last column) //-2 because the last 2 columns represent label & id\n  val dim = points2.take(1)(0).size - labId\n  @transient var gstream = new batchStream()\n                            .setDecayFactor(decayFactor)\n                            .setLambdaAge(lambdaAge)\n                            .setMaxInsert(nbNodesToAdd)\n\n  // converting each point into an object\n  @transient val dstreamObj = stream.map( e =>\n    gstream.model.pointToObjet(e, dim, labId)\n  )\n\n  // dstreamObj.cache() //TODO: to save in memory\n\n  // initialization of the model by creating a graph of two nodes (the first 2 data-points)\n  gstream.initModelObj(points2, dim)\n\n  // training on the model\n  gstream.trainOnObj(dstreamObj, gstream, outputDir+\"/\"+DSname+\"-\"+nbNodesToAdd, dim, nbWind)\n\n  startCreateData\n  \n  ssc.start()\n}\n\nform ++ row(text(\"Files\") ++ dataFiles, text(\"Observations\") ++ datalist)",
     "outputs" : [ ]
   }, {
     "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : true,
-      "id" : "A2B61BA7A0A44BFFBC7B387ECBEA1ACC"
+      "id" : "B5C80028FF7A49BF8FD69DFC426D8D94"
     },
-    "cell_type" : "code",
-    "source" : "",
-    "outputs" : [ ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : true,
-      "id" : "33F2DEB0CDEA44879A34878DF77ACAE6"
-    },
-    "cell_type" : "code",
-    "source" : "",
-    "outputs" : [ ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
-      "id" : "082DD0C61D194892820281FDEEF64420"
-    },
-    "cell_type" : "code",
-    "source" : "val outputDir = \"/tmp/gstreama0bddd7f-1ca1-4bc4-a70c-03e9155f8179\"",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "outputDir: String = /tmp/gstreama0bddd7f-1ca1-4bc4-a70c-03e9155f8179\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 1
-    } ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
-      "id" : "A1EF544BAC0A43E888DB7890B0ACBC29"
-    },
-    "cell_type" : "code",
-    "source" : "val sqlc = new org.apache.spark.sql.SQLContext(sparkContext)\nimport sqlc.implicits._",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "sqlc: org.apache.spark.sql.SQLContext = org.apache.spark.sql.SQLContext@36867a0b\nimport sqlc.implicits._\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 2
-    } ]
+    "cell_type" : "markdown",
+    "source" : "Defining some method to rebuild the prototypes graph and prepare the data for the plots."
   }, {
     "metadata" : {
       "trusted" : true,
@@ -327,74 +196,52 @@
       "id" : "9E8D5CB9963E465799E8FDF7D0B2340E"
     },
     "cell_type" : "code",
-    "source" : "def graph(i:Int) = {\n  val wg = sparkContext.textFile(outputDir + \"/dsname-3/Weights-\" + i).collect.map(_.toDouble)\n  val pt = sparkContext.textFile(outputDir + \"/dsname-3/Prototypes-\" + i).collect.map(_.split(\",\").map(_.trim.toDouble))\n  val eg = sparkContext.textFile(outputDir + \"/dsname-3/Edges-\" + i).collect.map(_.drop(\"ArrayBuffer(\".size).init.mkString)\n                                                                          .map(_.split(\",\").map(_.trim.toInt))\n  (wg, pt, eg)\n}",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "graph: (i: Int)(Array[Double], Array[Array[Double]], Array[Array[Int]])\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 3
-    } ]
+    "source" : "def outputFiles(i:Int) = (\n                          outputDir + \"/dsname-3/Weights-\" + i,\n                          outputDir + \"/dsname-3/Prototypes-\" + i,\n                          outputDir + \"/dsname-3/Edges-\" + i\n                        )\n\ndef graph(i:Int) = {\n  val (w, p, e) = outputFiles(i)\n  val wg = sparkContext.textFile(w).collect.map(_.toDouble)\n  val pt = sparkContext.textFile(p).collect.map(_.split(\",\").map(_.trim.toDouble))\n  val eg = sparkContext.textFile(e).collect.map(_.drop(\"ArrayBuffer(\".size).init.mkString).map(_.split(\",\").map(_.trim.toInt))\n  (wg, pt, eg)\n}",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "E16EAF866336422DB44914A7B6529683"
+    },
+    "cell_type" : "code",
+    "source" : "def plotGraph(id:Int):Array[Graph[String]] = {\n  val g = graph(id)\n  val nodes = g._1.zip(g._2).zipWithIndex.map{ case ((w, Array(x, y)), i) => Node[String](\"\"+i, (x,y), \"#000\", w.toInt, Some((x,y)), true) }\n  val edges = g._3.zipWithIndex\n                    .map { case (e, s) => \n                      e.zipWithIndex.filter(_._1 == 1)\n                          .map{ case (_, t) =>Edge[String](s\"$s-$t\", (\"\"+s, \"\"+t), ()) } \n                    }.flatten\n  nodes ++ edges\n}",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "7C34316524E64A85B23F459651F93730"
+    },
+    "cell_type" : "markdown",
+    "source" : "Plot the graph of prototypes (also showing with steps we're in)"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "CACC4DE7723F4D5D809E501214050716"
+    },
+    "cell_type" : "code",
+    "source" : "val chart = GraphChart(Array.empty[Graph[String]], sizes=(1200, 1000))\nval currentOut = out\ncurrentOut ++ chart",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "69EF0891B0994AB3911A91C7DFE0FA7C"
+    },
+    "cell_type" : "markdown",
+    "source" : "Checking output directory for new intermediate step in order to update the graph above"
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
       "collapsed" : false,
       "presentation" : {
-        "tabs_state" : "{\n  \"tab_id\": \"#tab1554846199-0\"\n}",
-        "pivot_chart_state" : "{\n  \"hiddenAttributes\": [],\n  \"menuLimit\": 200,\n  \"cols\": [],\n  \"rows\": [],\n  \"vals\": [],\n  \"exclusions\": {},\n  \"inclusions\": {},\n  \"unusedAttrsVertical\": 85,\n  \"autoSortUnusedAttrs\": false,\n  \"inclusionsInfo\": {},\n  \"aggregatorName\": \"Count\",\n  \"rendererName\": \"Table\"\n}"
+        "tabs_state" : "{\n  \"tab_id\": \"#tab1243961551-0\"\n}"
       },
-      "id" : "C6B7AB415AA7472CAF088D344E544058"
+      "id" : "868D2C46669640068B11990F70D9A099"
     },
     "cell_type" : "code",
-    "source" : "def plotGraph(id:Int) = {\n  val g = graph(id)\n  val nodes = g._1.zip(g._2).zipWithIndex.map{ case ((w, Array(x, y)), i) => Node(i, (x,y), \"#000\", w.toInt, Some((x,y)), false) }\n  val edges = g._3.zipWithIndex\n                    .map { case (e, s) => \n                      e.zipWithIndex.filter(_._1 == 1)\n                          .map{ case (_, t) =>Edge(s\"$s-$t\", (s, t), ()) } \n                    }.flatten\n  val w = g._2.map(x => x(0)).max*1.1\n  val h = g._2.map(x => x(1)).max.toInt*1.1\n  GraphChart(nodes ++ edges, sizes=(w.toInt, h.toInt))\n}",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "plotGraph: (id: Int)notebook.front.widgets.GraphChart[Array[Product with Serializable with notebook.front.widgets.magic.Graph[_ >: Int]]]\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 32
-    } ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
-      "id" : "38D00EE00EA04930B25E55D107573A2A"
-    },
-    "cell_type" : "code",
-    "source" : "plotGraph(48)",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "res47: notebook.front.widgets.GraphChart[Array[Product with Serializable with notebook.front.widgets.magic.Graph[_ >: Int]]] = <GraphChart widget>\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : "<div>\n      <script data-this=\"{&quot;dataId&quot;:&quot;anonaea47285d10adaa3e00fae7f143041f4&quot;,&quot;dataInit&quot;:[{&quot;x&quot;:138.93436765596346,&quot;y&quot;:331.46581638068585,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:331.46581638068585,&quot;_1&quot;:138.93436765596346,&quot;fixed&quot;:false,&quot;r&quot;:8,&quot;nodeId&quot;:&quot;0&quot;},{&quot;x&quot;:918.803382900269,&quot;y&quot;:828.225253765096,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:828.225253765096,&quot;_1&quot;:918.803382900269,&quot;fixed&quot;:false,&quot;r&quot;:7,&quot;nodeId&quot;:&quot;1&quot;},{&quot;x&quot;:956.2377597052998,&quot;y&quot;:267.7725659465221,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:267.7725659465221,&quot;_1&quot;:956.2377597052998,&quot;fixed&quot;:false,&quot;r&quot;:20,&quot;nodeId&quot;:&quot;2&quot;},{&quot;x&quot;:310.8049217984951,&quot;y&quot;:832.1701293501376,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:832.1701293501376,&quot;_1&quot;:310.8049217984951,&quot;fixed&quot;:false,&quot;r&quot;:17,&quot;nodeId&quot;:&quot;3&quot;},{&quot;x&quot;:434.5080061742043,&quot;y&quot;:123.31075468183586,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:123.31075468183586,&quot;_1&quot;:434.5080061742043,&quot;fixed&quot;:false,&quot;r&quot;:9,&quot;nodeId&quot;:&quot;4&quot;},{&quot;x&quot;:349.24396675832594,&quot;y&quot;:652.1058935046905,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:652.1058935046905,&quot;_1&quot;:349.24396675832594,&quot;fixed&quot;:false,&quot;r&quot;:7,&quot;nodeId&quot;:&quot;5&quot;},{&quot;x&quot;:258.99433794260676,&quot;y&quot;:95.95978681702394,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:95.95978681702394,&quot;_1&quot;:258.99433794260676,&quot;fixed&quot;:false,&quot;r&quot;:9,&quot;nodeId&quot;:&quot;6&quot;},{&quot;x&quot;:167.34177446616425,&quot;y&quot;:774.4730635551952,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:774.4730635551952,&quot;_1&quot;:167.34177446616425,&quot;fixed&quot;:false,&quot;r&quot;:20,&quot;nodeId&quot;:&quot;7&quot;},{&quot;x&quot;:425.3630144732269,&quot;y&quot;:292.41287796223673,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:292.41287796223673,&quot;_1&quot;:425.3630144732269,&quot;fixed&quot;:false,&quot;r&quot;:6,&quot;nodeId&quot;:&quot;8&quot;},{&quot;x&quot;:670.8088185208229,&quot;y&quot;:390.59287229456083,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:390.59287229456083,&quot;_1&quot;:670.8088185208229,&quot;fixed&quot;:false,&quot;r&quot;:5,&quot;nodeId&quot;:&quot;9&quot;},{&quot;x&quot;:570.4538212365035,&quot;y&quot;:526.8052900697688,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:526.8052900697688,&quot;_1&quot;:570.4538212365035,&quot;fixed&quot;:false,&quot;r&quot;:6,&quot;nodeId&quot;:&quot;10&quot;},{&quot;x&quot;:819.4505559466181,&quot;y&quot;:540.4586312211285,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:540.4586312211285,&quot;_1&quot;:819.4505559466181,&quot;fixed&quot;:false,&quot;r&quot;:3,&quot;nodeId&quot;:&quot;11&quot;},{&quot;x&quot;:1145.7453424634252,&quot;y&quot;:776.8651449122232,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:776.8651449122232,&quot;_1&quot;:1145.7453424634252,&quot;fixed&quot;:false,&quot;r&quot;:10,&quot;nodeId&quot;:&quot;12&quot;},{&quot;x&quot;:489.0735140227283,&quot;y&quot;:626.1280661858711,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:626.1280661858711,&quot;_1&quot;:489.0735140227283,&quot;fixed&quot;:false,&quot;r&quot;:2,&quot;nodeId&quot;:&quot;13&quot;},{&quot;x&quot;:117.59099474818535,&quot;y&quot;:227.07073718149914,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:227.07073718149914,&quot;_1&quot;:117.59099474818535,&quot;fixed&quot;:false,&quot;r&quot;:4,&quot;nodeId&quot;:&quot;14&quot;},{&quot;x&quot;:182.6693425938655,&quot;y&quot;:500.7628234729083,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:500.7628234729083,&quot;_1&quot;:182.6693425938655,&quot;fixed&quot;:false,&quot;r&quot;:20,&quot;nodeId&quot;:&quot;15&quot;},{&quot;x&quot;:682.9202201872868,&quot;y&quot;:834.6123532109672,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:834.6123532109672,&quot;_1&quot;:682.9202201872868,&quot;fixed&quot;:false,&quot;r&quot;:4,&quot;nodeId&quot;:&quot;16&quot;},{&quot;x&quot;:606.528085185202,&quot;y&quot;:189.8532238204154,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:189.8532238204154,&quot;_1&quot;:606.528085185202,&quot;fixed&quot;:false,&quot;r&quot;:11,&quot;nodeId&quot;:&quot;17&quot;},{&quot;x&quot;:330.4925575817432,&quot;y&quot;:479.3847306973299,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:479.3847306973299,&quot;_1&quot;:330.4925575817432,&quot;fixed&quot;:false,&quot;r&quot;:4,&quot;nodeId&quot;:&quot;18&quot;},{&quot;x&quot;:147.73278721022558,&quot;y&quot;:202.15364989628802,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:202.15364989628802,&quot;_1&quot;:147.73278721022558,&quot;fixed&quot;:false,&quot;r&quot;:0,&quot;nodeId&quot;:&quot;19&quot;},{&quot;x&quot;:500.2375690607735,&quot;y&quot;:246.8121546961326,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:246.8121546961326,&quot;_1&quot;:500.2375690607735,&quot;fixed&quot;:false,&quot;r&quot;:1,&quot;nodeId&quot;:&quot;20&quot;},{&quot;x&quot;:565.1279076240505,&quot;y&quot;:705.1224158729761,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:705.1224158729761,&quot;_1&quot;:565.1279076240505,&quot;fixed&quot;:false,&quot;r&quot;:0,&quot;nodeId&quot;:&quot;21&quot;},{&quot;x&quot;:174.90193649340384,&quot;y&quot;:179.61808877008426,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:179.61808877008426,&quot;_1&quot;:174.90193649340384,&quot;fixed&quot;:false,&quot;r&quot;:3,&quot;nodeId&quot;:&quot;22&quot;},{&quot;x&quot;:273.48686406979124,&quot;y&quot;:456.3354125558315,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:456.3354125558315,&quot;_1&quot;:273.48686406979124,&quot;fixed&quot;:false,&quot;r&quot;:4,&quot;nodeId&quot;:&quot;23&quot;},{&quot;x&quot;:1168.0,&quot;y&quot;:267.0,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:267.0,&quot;_1&quot;:1168.0,&quot;fixed&quot;:false,&quot;r&quot;:0,&quot;nodeId&quot;:&quot;24&quot;},{&quot;x&quot;:1076.1859831127483,&quot;y&quot;:425.19131327505676,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:425.19131327505676,&quot;_1&quot;:1076.1859831127483,&quot;fixed&quot;:false,&quot;r&quot;:0,&quot;nodeId&quot;:&quot;25&quot;},{&quot;x&quot;:596.0,&quot;y&quot;:732.0,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:732.0,&quot;_1&quot;:596.0,&quot;fixed&quot;:false,&quot;r&quot;:0,&quot;nodeId&quot;:&quot;26&quot;},{&quot;x&quot;:1141.6935398188832,&quot;y&quot;:468.0434644203124,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:468.0434644203124,&quot;_1&quot;:1141.6935398188832,&quot;fixed&quot;:false,&quot;r&quot;:6,&quot;nodeId&quot;:&quot;27&quot;},{&quot;x&quot;:534.255815248101,&quot;y&quot;:678.2448317459523,&quot;color&quot;:&quot;#000&quot;,&quot;_2&quot;:678.2448317459523,&quot;_1&quot;:534.255815248101,&quot;fixed&quot;:false,&quot;r&quot;:0,&quot;nodeId&quot;:&quot;28&quot;},{&quot;edgeId&quot;:&quot;0-7&quot;,&quot;end1Id&quot;:&quot;0&quot;,&quot;end2Id&quot;:&quot;7&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;0-17&quot;,&quot;end1Id&quot;:&quot;0&quot;,&quot;end2Id&quot;:&quot;17&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;1-8&quot;,&quot;end1Id&quot;:&quot;1&quot;,&quot;end2Id&quot;:&quot;8&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;1-14&quot;,&quot;end1Id&quot;:&quot;1&quot;,&quot;end2Id&quot;:&quot;14&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;1-15&quot;,&quot;end1Id&quot;:&quot;1&quot;,&quot;end2Id&quot;:&quot;15&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;1-19&quot;,&quot;end1Id&quot;:&quot;1&quot;,&quot;end2Id&quot;:&quot;19&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;2-5&quot;,&quot;end1Id&quot;:&quot;2&quot;,&quot;end2Id&quot;:&quot;5&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;2-9&quot;,&quot;end1Id&quot;:&quot;2&quot;,&quot;end2Id&quot;:&quot;9&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;2-14&quot;,&quot;end1Id&quot;:&quot;2&quot;,&quot;end2Id&quot;:&quot;14&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;2-23&quot;,&quot;end1Id&quot;:&quot;2&quot;,&quot;end2Id&quot;:&quot;23&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;2-24&quot;,&quot;end1Id&quot;:&quot;2&quot;,&quot;end2Id&quot;:&quot;24&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;3-3&quot;,&quot;end1Id&quot;:&quot;3&quot;,&quot;end2Id&quot;:&quot;3&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;3-12&quot;,&quot;end1Id&quot;:&quot;3&quot;,&quot;end2Id&quot;:&quot;12&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;4-9&quot;,&quot;end1Id&quot;:&quot;4&quot;,&quot;end2Id&quot;:&quot;9&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;4-13&quot;,&quot;end1Id&quot;:&quot;4&quot;,&quot;end2Id&quot;:&quot;13&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;4-27&quot;,&quot;end1Id&quot;:&quot;4&quot;,&quot;end2Id&quot;:&quot;27&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;5-3&quot;,&quot;end1Id&quot;:&quot;5&quot;,&quot;end2Id&quot;:&quot;3&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;5-7&quot;,&quot;end1Id&quot;:&quot;5&quot;,&quot;end2Id&quot;:&quot;7&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;5-10&quot;,&quot;end1Id&quot;:&quot;5&quot;,&quot;end2Id&quot;:&quot;10&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;5-16&quot;,&quot;end1Id&quot;:&quot;5&quot;,&quot;end2Id&quot;:&quot;16&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;5-22&quot;,&quot;end1Id&quot;:&quot;5&quot;,&quot;end2Id&quot;:&quot;22&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;5-25&quot;,&quot;end1Id&quot;:&quot;5&quot;,&quot;end2Id&quot;:&quot;25&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;6-11&quot;,&quot;end1Id&quot;:&quot;6&quot;,&quot;end2Id&quot;:&quot;11&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;6-21&quot;,&quot;end1Id&quot;:&quot;6&quot;,&quot;end2Id&quot;:&quot;21&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;7-10&quot;,&quot;end1Id&quot;:&quot;7&quot;,&quot;end2Id&quot;:&quot;10&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;7-12&quot;,&quot;end1Id&quot;:&quot;7&quot;,&quot;end2Id&quot;:&quot;12&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;8-21&quot;,&quot;end1Id&quot;:&quot;8&quot;,&quot;end2Id&quot;:&quot;21&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;8-27&quot;,&quot;end1Id&quot;:&quot;8&quot;,&quot;end2Id&quot;:&quot;27&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;9-2&quot;,&quot;end1Id&quot;:&quot;9&quot;,&quot;end2Id&quot;:&quot;2&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;9-6&quot;,&quot;end1Id&quot;:&quot;9&quot;,&quot;end2Id&quot;:&quot;6&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;9-9&quot;,&quot;end1Id&quot;:&quot;9&quot;,&quot;end2Id&quot;:&quot;9&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;9-14&quot;,&quot;end1Id&quot;:&quot;9&quot;,&quot;end2Id&quot;:&quot;14&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;10-5&quot;,&quot;end1Id&quot;:&quot;10&quot;,&quot;end2Id&quot;:&quot;5&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;10-14&quot;,&quot;end1Id&quot;:&quot;10&quot;,&quot;end2Id&quot;:&quot;14&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;10-16&quot;,&quot;end1Id&quot;:&quot;10&quot;,&quot;end2Id&quot;:&quot;16&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;10-25&quot;,&quot;end1Id&quot;:&quot;10&quot;,&quot;end2Id&quot;:&quot;25&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;11-1&quot;,&quot;end1Id&quot;:&quot;11&quot;,&quot;end2Id&quot;:&quot;1&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;11-2&quot;,&quot;end1Id&quot;:&quot;11&quot;,&quot;end2Id&quot;:&quot;2&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;11-5&quot;,&quot;end1Id&quot;:&quot;11&quot;,&quot;end2Id&quot;:&quot;5&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;11-6&quot;,&quot;end1Id&quot;:&quot;11&quot;,&quot;end2Id&quot;:&quot;6&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;11-19&quot;,&quot;end1Id&quot;:&quot;11&quot;,&quot;end2Id&quot;:&quot;19&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;11-23&quot;,&quot;end1Id&quot;:&quot;11&quot;,&quot;end2Id&quot;:&quot;23&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;12-1&quot;,&quot;end1Id&quot;:&quot;12&quot;,&quot;end2Id&quot;:&quot;1&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;12-19&quot;,&quot;end1Id&quot;:&quot;12&quot;,&quot;end2Id&quot;:&quot;19&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;13-6&quot;,&quot;end1Id&quot;:&quot;13&quot;,&quot;end2Id&quot;:&quot;6&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;13-12&quot;,&quot;end1Id&quot;:&quot;13&quot;,&quot;end2Id&quot;:&quot;12&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;13-20&quot;,&quot;end1Id&quot;:&quot;13&quot;,&quot;end2Id&quot;:&quot;20&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;14-0&quot;,&quot;end1Id&quot;:&quot;14&quot;,&quot;end2Id&quot;:&quot;0&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;14-26&quot;,&quot;end1Id&quot;:&quot;14&quot;,&quot;end2Id&quot;:&quot;26&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;15-0&quot;,&quot;end1Id&quot;:&quot;15&quot;,&quot;end2Id&quot;:&quot;0&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;15-12&quot;,&quot;end1Id&quot;:&quot;15&quot;,&quot;end2Id&quot;:&quot;12&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;15-22&quot;,&quot;end1Id&quot;:&quot;15&quot;,&quot;end2Id&quot;:&quot;22&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;15-25&quot;,&quot;end1Id&quot;:&quot;15&quot;,&quot;end2Id&quot;:&quot;25&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;16-1&quot;,&quot;end1Id&quot;:&quot;16&quot;,&quot;end2Id&quot;:&quot;1&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;16-18&quot;,&quot;end1Id&quot;:&quot;16&quot;,&quot;end2Id&quot;:&quot;18&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;17-2&quot;,&quot;end1Id&quot;:&quot;17&quot;,&quot;end2Id&quot;:&quot;2&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;17-5&quot;,&quot;end1Id&quot;:&quot;17&quot;,&quot;end2Id&quot;:&quot;5&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;17-11&quot;,&quot;end1Id&quot;:&quot;17&quot;,&quot;end2Id&quot;:&quot;11&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;17-27&quot;,&quot;end1Id&quot;:&quot;17&quot;,&quot;end2Id&quot;:&quot;27&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;18-6&quot;,&quot;end1Id&quot;:&quot;18&quot;,&quot;end2Id&quot;:&quot;6&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;18-7&quot;,&quot;end1Id&quot;:&quot;18&quot;,&quot;end2Id&quot;:&quot;7&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;18-12&quot;,&quot;end1Id&quot;:&quot;18&quot;,&quot;end2Id&quot;:&quot;12&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;18-22&quot;,&quot;end1Id&quot;:&quot;18&quot;,&quot;end2Id&quot;:&quot;22&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;19-17&quot;,&quot;end1Id&quot;:&quot;19&quot;,&quot;end2Id&quot;:&quot;17&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;19-21&quot;,&quot;end1Id&quot;:&quot;19&quot;,&quot;end2Id&quot;:&quot;21&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;20-4&quot;,&quot;end1Id&quot;:&quot;20&quot;,&quot;end2Id&quot;:&quot;4&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;20-9&quot;,&quot;end1Id&quot;:&quot;20&quot;,&quot;end2Id&quot;:&quot;9&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;20-11&quot;,&quot;end1Id&quot;:&quot;20&quot;,&quot;end2Id&quot;:&quot;11&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;21-18&quot;,&quot;end1Id&quot;:&quot;21&quot;,&quot;end2Id&quot;:&quot;18&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;21-20&quot;,&quot;end1Id&quot;:&quot;21&quot;,&quot;end2Id&quot;:&quot;20&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;22-4&quot;,&quot;end1Id&quot;:&quot;22&quot;,&quot;end2Id&quot;:&quot;4&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;22-13&quot;,&quot;end1Id&quot;:&quot;22&quot;,&quot;end2Id&quot;:&quot;13&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;22-26&quot;,&quot;end1Id&quot;:&quot;22&quot;,&quot;end2Id&quot;:&quot;26&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;23-7&quot;,&quot;end1Id&quot;:&quot;23&quot;,&quot;end2Id&quot;:&quot;7&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;23-12&quot;,&quot;end1Id&quot;:&quot;23&quot;,&quot;end2Id&quot;:&quot;12&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;23-25&quot;,&quot;end1Id&quot;:&quot;23&quot;,&quot;end2Id&quot;:&quot;25&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;24-2&quot;,&quot;end1Id&quot;:&quot;24&quot;,&quot;end2Id&quot;:&quot;2&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;24-14&quot;,&quot;end1Id&quot;:&quot;24&quot;,&quot;end2Id&quot;:&quot;14&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;24-24&quot;,&quot;end1Id&quot;:&quot;24&quot;,&quot;end2Id&quot;:&quot;24&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;25-2&quot;,&quot;end1Id&quot;:&quot;25&quot;,&quot;end2Id&quot;:&quot;2&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;25-19&quot;,&quot;end1Id&quot;:&quot;25&quot;,&quot;end2Id&quot;:&quot;19&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;25-23&quot;,&quot;end1Id&quot;:&quot;25&quot;,&quot;end2Id&quot;:&quot;23&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;26-8&quot;,&quot;end1Id&quot;:&quot;26&quot;,&quot;end2Id&quot;:&quot;8&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;26-28&quot;,&quot;end1Id&quot;:&quot;26&quot;,&quot;end2Id&quot;:&quot;28&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;27-1&quot;,&quot;end1Id&quot;:&quot;27&quot;,&quot;end2Id&quot;:&quot;1&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;27-14&quot;,&quot;end1Id&quot;:&quot;27&quot;,&quot;end2Id&quot;:&quot;14&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;27-15&quot;,&quot;end1Id&quot;:&quot;27&quot;,&quot;end2Id&quot;:&quot;15&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;27-24&quot;,&quot;end1Id&quot;:&quot;27&quot;,&quot;end2Id&quot;:&quot;24&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;28-16&quot;,&quot;end1Id&quot;:&quot;28&quot;,&quot;end2Id&quot;:&quot;16&quot;,&quot;color&quot;:&quot;#999&quot;},{&quot;edgeId&quot;:&quot;28-28&quot;,&quot;end1Id&quot;:&quot;28&quot;,&quot;end2Id&quot;:&quot;28&quot;,&quot;color&quot;:&quot;#999&quot;}],&quot;genId&quot;:&quot;778093979&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/req(['../javascripts/notebook/playground','../javascripts/notebook/magic/graphChart'], \n      function(playground, _magicgraphChart) {\n        // data ==> data-this (in observable.js's scopedEval) ==> this in JS => { dataId, dataInit, ... }\n        // this ==> scope (in observable.js's scopedEval) ==> this.parentElement ==> div.container below (toHtml)\n\n        playground.call(data,\n                        this\n                        ,\n                        {\n    \"f\": _magicgraphChart,\n    \"o\": {\"headers\":[\"_1\",\"_2\",\"nodeId\",\"color\",\"r\",\"x\",\"y\",\"fixed\"],\"width\":1284,\"height\":917,\"charge\":-30,\"linkDistance\":20,\"linkStrength\":1.0}\n  }\n  \n                        \n                        \n                      );\n      }\n    );/*]]>*/</script>\n    <div>\n        <p data-bind=\"text: value\"><script data-this=\"{&quot;valueId&quot;:&quot;anon915871f76d972a01762046944d5bfdda&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/\nreq(\n['observable', 'knockout'],\nfunction (O, ko) {\n  ko.applyBindings({\n      value: O.makeObservable(valueId)\n    },\n    this\n  );\n});\n        /*]]>*/</script></p> <span style=\"color:red\"><p data-bind=\"text: value\"><script data-this=\"{&quot;valueId&quot;:&quot;anon9a3a93433aa7eb7be022d3ccda866702&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/\nreq(\n['observable', 'knockout'],\nfunction (O, ko) {\n  ko.applyBindings({\n      value: O.makeObservable(valueId)\n    },\n    this\n  );\n});\n        /*]]>*/</script></p></span>\n        <div>\n        </div>\n      </div></div>"
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 33
-    } ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : true,
-      "id" : "CACC4DE7723F4D5D809E501214050716"
-    },
-    "cell_type" : "code",
-    "source" : "",
+    "source" : "@volatile var stopChecks = false\n@volatile var speedChecks = 5000\ndef checkOutput(i:Int):Future[Unit] = Future {\n  Thread.sleep(speedChecks)\n  if (!stopChecks) {\n    val (w, p, e) = outputFiles(i)\n    if (List(w,p,e).forall(x => new java.io.File(x).exists)) {\n      currentOut(\"Output \"  + i)\n      chart.applyOn(plotGraph(i))\n      checkOutput(i+1)\n    } else {\n      checkOutput(i)\n    }\n  }\n}\ncheckOutput(1)",
     "outputs" : [ ]
   } ],
   "nbformat" : 4
