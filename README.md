@@ -5,7 +5,7 @@ See (https://hub.docker.com/r/spartakus/coliseum/) for online image.
 
 ## Build
 ```bash
-docker build -t spartakus/coliseum:0.0.1 .
+docker build -t spartakus/coliseum:0.0.2 .
 ```
 
 ## Dependencies
