@@ -1,0 +1,248 @@
+{
+  "metadata" : {
+    "name" : "G-Stream",
+    "user_save_timestamp" : "1970-01-01T01:00:00.000Z",
+    "auto_save_timestamp" : "1970-01-01T01:00:00.000Z",
+    "language_info" : {
+      "name" : "scala",
+      "file_extension" : "scala",
+      "codemirror_mode" : "text/x-scala"
+    },
+    "trusted" : true,
+    "customLocalRepo" : null,
+    "customRepos" : null,
+    "customDeps" : [ "batchstream %% batchstream % 1.0" ],
+    "customImports" : null,
+    "customArgs" : null,
+    "customSparkConf" : null
+  },
+  "cells" : [ {
+    "metadata" : {
+      "id" : "9EBF902FB8814B00BD98CBC56AFC659E"
+    },
+    "cell_type" : "markdown",
+    "source" : "# G-Stream"
+  }, {
+    "metadata" : {
+      "id" : "F373CD8BA9AA412E8E0F8E268A547BFD"
+    },
+    "cell_type" : "markdown",
+    "source" : "Defining the few data folders and data files needed for the experiment."
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "C249EBAC9D6E415299662EAEFD02E355"
+    },
+    "cell_type" : "code",
+    "source" : "val dataDir = \"/root/data/coliseum\"\nval dataFile = dataDir + \"/DS1.txt\"\nval expDir = sys.props(\"java.io.tmpdir\") + \"/exp\"\nval outputDir = sys.props(\"java.io.tmpdir\") + \"/gstream\"+java.util.UUID.randomUUID.toString",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "FD38C2747957405C8F2852F6F1D8FEA4"
+    },
+    "cell_type" : "markdown",
+    "source" : "Clean up the experiment."
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "2CE0313D1295479DBBACE9784A8330E0"
+    },
+    "cell_type" : "code",
+    "source" : "new java.io.File(expDir).mkdirs\nnew java.io.File(expDir).listFiles.foreach(_.delete)\nnew java.io.File(outputDir).mkdirs",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "5F55302A94404435881A7F7A09C4D7B8"
+    },
+    "cell_type" : "markdown",
+    "source" : "Counter of data files, used in names"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "71AF99092E2F475ABC4007BC16547766"
+    },
+    "cell_type" : "code",
+    "source" : "var dataCount = 0",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "0B062542990D4AE79B3D39DABABF6990"
+    },
+    "cell_type" : "markdown",
+    "source" : "Initialize the experiment: create data source as a stream of lines and create first file with 2 clusters."
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "C7D5D94BBF1F4CC196AB7FD20AE9C5DE"
+    },
+    "cell_type" : "code",
+    "source" : "import sys.process._\nval w = new java.io.FileWriter(new java.io.File(s\"$expDir/data$dataCount\"))\nval dataSource = scala.io.Source.fromFile(dataFile).getLines\ndataSource.take(2).foreach(l => w.write(l + \"\\n\"))\nw.close",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "E36D71F01B4544559E23C3CCF3462E1B"
+    },
+    "cell_type" : "markdown",
+    "source" : "Helper to create new data file based on original data source"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "4587A78B66B34B4580659BD518093FB9"
+    },
+    "cell_type" : "code",
+    "source" : "val nbLines = 10\nimport scala.concurrent.Future\nimport scala.concurrent.ExecutionContext.Implicits.global\n\ndef newData(lines:Iterator[String], dc:Int) = Future {\n  val tmp = java.io.File.createTempFile(\"data\", \"\")\n  val w = new java.io.FileWriter(tmp)\n  println(tmp.getAbsolutePath)\n  val d = new java.io.File(s\"$expDir/data$dc\")\n  println(d.getAbsolutePath)\n  lines.take(nbLines).foreach(l => w.write(l + \"\\n\"))\n  w.close\n  val mv = s\"mv ${tmp.getAbsolutePath} ${d.getAbsolutePath}\"\n  println(mv)\n  mv.!!\n  val touch = s\"touch ${d.getAbsolutePath}\"\n  touch.!!\n  d.getAbsolutePath\n}",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "F238AAB8D22A470485F0A8116AA55D52"
+    },
+    "cell_type" : "markdown",
+    "source" : "Logger for the created files."
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "013BAEAE191C4C8C8FAB5F8F4F30D67B"
+    },
+    "cell_type" : "code",
+    "source" : "val dataFiles = ul(10)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "2CC34F707EEE47B3B049D7B9B58BC9ED"
+    },
+    "cell_type" : "markdown",
+    "source" : "Async loop to create data file, with two controllers (start and stop)"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "592209194DF94E6E8D5D8CC2F984EC73"
+    },
+    "cell_type" : "code",
+    "source" : "@volatile var sleepTime = 5000L\n@volatile var stop = false\n\ndef next:Future[Unit] = Future {\n  dataCount += 1\n  val n = newData(dataSource, dataCount)\n  n foreach (f => dataFiles.append(f))\n  if (dataSource.hasNext && !stop) {\n    Thread.sleep(sleepTime)\n    next\n  } else {\n    n\n  }\n  ()\n}\ndef startCreateData = { stop = false; next }\ndef stopCreateData = { stop = true }",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "988057FAF2344618821F64D1F801A280"
+    },
+    "cell_type" : "markdown",
+    "source" : "Logger for the last data points"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "08882AC25ACD46C99E9AC7337DD02937"
+    },
+    "cell_type" : "code",
+    "source" : "val datalist = ul(10)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "8A0487F51BC04912905C644109712FC4"
+    },
+    "cell_type" : "markdown",
+    "source" : "Create the streaming context in a `var` so we could restart the process without closing the spark context (link to cluster)"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "0DAAB22AFD374CEF8C80B2F4B73F40C6"
+    },
+    "cell_type" : "code",
+    "source" : "import org.apache.spark.streaming.{Seconds, StreamingContext, Milliseconds}\n@transient var ssc:StreamingContext = _",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "8518DFDF99DA4F528E451AA4C2243C80"
+    },
+    "cell_type" : "markdown",
+    "source" : "Creating a form with default parameter to run the experiment, you'll need to **click on Apply** to start creating the files in the experiment and to start training the model on the incoming data.\n\nWhen it'll start we'll also display the files last that were created and the last data points."
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "097E5B7A679C47D38F8A012E93B7907A"
+    },
+    "cell_type" : "code",
+    "source" : "val initConf = Map(\"dirData\"      → dataDir,\n                    \"dirSortie\"    → outputDir,\n                    \"DSname\"       → \"dsname\",\n                    \"separator\"    → \",\",\n                    \"decayFactor\"  → \"0.9\",\n                    \"lambdaAge\"    → \"1.2\",\n                    \"nbNodesToAdd\" → \"3\",\n                    \"nbWind\"       → \"5\", // in 1 to 9?\n                    \"intervalMs\"   → \"10000\")\n\nval form = Form[Map[String, String]](\n  d = initConf, \n  mainTitle = \"Configure the experiment\",\n  paramsToData = identity[Map[String,String]], \n  dataToParams = identity[Map[String,String]]\n) { m =>\n  stopCreateData\n  \n  import org.lipn.clustering.batchStream.batchStream\n  \n  StreamingContext.getActive.foreach(_.stop(false))\n  \n  ssc = new StreamingContext(sparkContext, Milliseconds(m(\"intervalMs\").toInt))\n  \n  val separator = m(\"separator\")\n  val decayFactor = m(\"decayFactor\").toDouble\n  val lambdaAge = m(\"lambdaAge\").toDouble\n  val nbNodesToAdd = m(\"nbNodesToAdd\").toInt\n  val nbWind = m(\"nbWind\").toInt\n  val DSname = m(\"DSname\")\n\n  // 'points2' contains the first two data-points used for initialising the model\n  @transient val points2 = sc.textFile(s\"$expDir/data0\").map(x => x.split(separator).map(_.toDouble))\n\n  // Create a DStreams that reads batch files from dirData\n  @transient val stream = ssc.textFileStream(expDir).map(x => x.split(separator).map(_.toDouble))\n  // Create a DStreams that will connect to a socket hostname:port\n  //val stream = ssc.socketTextStream(\"localhost\", 9999).map(x => x.split(separator).map(_.toDouble)) //localhost or 10.32.2.153 for Teralab\n\n  stream.foreachRDD{r => \n                    val d = r.take(10).map(_.toList.toString)\n                    datalist.appendAll(d)\n                   }  \n  val labId = 2 //TODO: change -1 to -2 when you add the id to the file (last column) //-2 because the last 2 columns represent label & id\n  val dim = points2.take(1)(0).size - labId\n  @transient var gstream = new batchStream()\n                            .setDecayFactor(decayFactor)\n                            .setLambdaAge(lambdaAge)\n                            .setMaxInsert(nbNodesToAdd)\n\n  // converting each point into an object\n  @transient val dstreamObj = stream.map( e =>\n    gstream.model.pointToObjet(e, dim, labId)\n  )\n\n  // dstreamObj.cache() //TODO: to save in memory\n\n  // initialization of the model by creating a graph of two nodes (the first 2 data-points)\n  gstream.initModelObj(points2, dim)\n\n  // training on the model\n  gstream.trainOnObj(dstreamObj, gstream, outputDir+\"/\"+DSname+\"-\"+nbNodesToAdd, dim, nbWind)\n\n  startCreateData\n  \n  ssc.start()\n}\n\nform ++ row(text(\"Files\") ++ dataFiles, text(\"Observations\") ++ datalist)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "B5C80028FF7A49BF8FD69DFC426D8D94"
+    },
+    "cell_type" : "markdown",
+    "source" : "Defining some method to rebuild the prototypes graph and prepare the data for the plots."
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "9E8D5CB9963E465799E8FDF7D0B2340E"
+    },
+    "cell_type" : "code",
+    "source" : "def outputFiles(i:Int) = (\n                          outputDir + \"/dsname-3/Weights-\" + i,\n                          outputDir + \"/dsname-3/Prototypes-\" + i,\n                          outputDir + \"/dsname-3/Edges-\" + i\n                        )\n\ndef graph(i:Int) = {\n  val (w, p, e) = outputFiles(i)\n  val wg = sparkContext.textFile(w).collect.map(_.toDouble)\n  val pt = sparkContext.textFile(p).collect.map(_.split(\",\").map(_.trim.toDouble))\n  val eg = sparkContext.textFile(e).collect.map(_.drop(\"ArrayBuffer(\".size).init.mkString).map(_.split(\",\").map(_.trim.toInt))\n  (wg, pt, eg)\n}",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "E16EAF866336422DB44914A7B6529683"
+    },
+    "cell_type" : "code",
+    "source" : "def plotGraph(id:Int):Array[Graph[String]] = {\n  val g = graph(id)\n  val nodes = g._1.zip(g._2).zipWithIndex.map{ case ((w, Array(x, y)), i) => Node[String](\"\"+i, (x,y), \"#000\", w.toInt, Some((x,y)), true) }\n  val edges = g._3.zipWithIndex\n                    .map { case (e, s) => \n                      e.zipWithIndex.filter(_._1 == 1)\n                          .map{ case (_, t) =>Edge[String](s\"$s-$t\", (\"\"+s, \"\"+t), ()) } \n                    }.flatten\n  nodes ++ edges\n}",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "7C34316524E64A85B23F459651F93730"
+    },
+    "cell_type" : "markdown",
+    "source" : "Plot the graph of prototypes (also showing with steps we're in)"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "CACC4DE7723F4D5D809E501214050716"
+    },
+    "cell_type" : "code",
+    "source" : "val chart = GraphChart(Array.empty[Graph[String]], sizes=(1200, 1000))\nval currentOut = out\ncurrentOut ++ chart",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "id" : "69EF0891B0994AB3911A91C7DFE0FA7C"
+    },
+    "cell_type" : "markdown",
+    "source" : "Checking output directory for new intermediate step in order to update the graph above"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "presentation" : {
+        "tabs_state" : "{\n  \"tab_id\": \"#tab1243961551-0\"\n}"
+      },
+      "id" : "868D2C46669640068B11990F70D9A099"
+    },
+    "cell_type" : "code",
+    "source" : "@volatile var stopChecks = false\n@volatile var speedChecks = 5000\ndef checkOutput(i:Int):Future[Unit] = Future {\n  Thread.sleep(speedChecks)\n  if (!stopChecks) {\n    val (w, p, e) = outputFiles(i)\n    if (List(w,p,e).forall(x => new java.io.File(x).exists)) {\n      currentOut(\"Output \"  + i)\n      chart.applyOn(plotGraph(i))\n      checkOutput(i+1)\n    } else {\n      checkOutput(i)\n    }\n  }\n}\ncheckOutput(1)",
+    "outputs" : [ ]
+  } ],
+  "nbformat" : 4
+}

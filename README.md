@@ -5,7 +5,7 @@ See (https://hub.docker.com/r/spartakus/coliseum/) for online image.
 
 ## Build
 ```bash
-docker build -t spartakus/coliseum:0.0.1 .
+docker build -t spartakus/coliseum:0.0.2 .
 ```
 
 ## Dependencies
@@ -24,6 +24,16 @@ On the host machine (that runs docker), we need to deploy the dependency locally
 git clone https://github.com/Spark-clustering-notebook/Mean-Shift-LSH.git
 cd Mean-Shift-LSH
 git checkout spark-1.6 # unless https://github.com/Spark-clustering-notebook/Mean-Shift-LSH/pull/1 is merged
+sbt publishM2
+sbt publishLocal
+```
+
+#### G-Stream
+
+```sh
+git clone https://github.com/Spark-clustering-notebook/G-stream.git
+cd G-stream
+git checkout sbt-bump-spark # unless https://github.com/Spark-clustering-notebook/G-stream/pull/1
 sbt publishM2
 sbt publishLocal
 ```

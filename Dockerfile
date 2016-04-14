@@ -1,12 +1,14 @@
 FROM ubuntu:14.04
 
-ENV SCALA_VERSION=2.10.4
-ENV SPARK_VERSION=1.4.1
+ENV SCALA_VERSION=2.10.5
+ENV SPARK_VERSION=1.6.0
 
 EXPOSE 80 4042 9160 9042 9200 7077 38080 38081 6060 6061 8090 8099 10000 50070 50090 9092 6066 9000 19999 6379 6081 7474 8787 5601 8989 7979 4040
 
 RUN \
- apt-get update \
+ apt-get install -y software-properties-common \
+ && add-apt-repository ppa:openjdk-r/ppa \
+ && apt-get update \
  && apt-get install -y curl \
  && apt-get install -y wget \
  && apt-get install -y vim \
@@ -23,7 +25,7 @@ RUN \
  && apt-get install -y openssh-server \
 
 # Java
- && apt-get install -y default-jdk
+ && apt-get install -y openjdk-8-jdk
 
  RUN \
  cd /root \
@@ -48,10 +50,10 @@ RUN \
  && rm sbt-0.13.8.tgz
 
 
-# Spark Notebook: 0.6.3 default scala 2.10 spark 1.6.0 hadoop 2.2.0 + hive + parquet, guava 16.0.1 for cassandra connector
+# Spark Notebook: 0.7.0-SNAPSHOT default scala 2.10 spark 1.6.0 hadoop 2.2.0 + hive + parquet, guava 16.0.1 for cassandra connector
 RUN \
  cd /root \
- && wget https://s3-eu-west-1.amazonaws.com/data-fellas-coliseum/spark-notebook-0.6.3-scala-2.10.5-spark-1.6.0-hadoop-2.2.0-with-hive-with-parquet.tgz \
+ && wget https://s3-eu-west-1.amazonaws.com/data-fellas-coliseum/spark-notebook-0.7.0-SNAPSHOT-scala-2.10.5-spark-1.6.0-hadoop-2.2.0-with-hive-with-parquet.tgz \
  && tar xvzf spark-notebook-*tgz --warning=no-timestamp \
  && rm spark-notebook-*tgz \
  && mv spark-notebook-* spark-notebook
