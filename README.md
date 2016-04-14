@@ -3,9 +3,48 @@ LIPN CNRS UMR 7030  (https://github.com/Spark-clustering-notebook/coliseum/wiki)
 
 See (https://hub.docker.com/r/spartakus/coliseum/) for online image.
 
+## Docker
+First you need to pull the docker image locally.
+
+```sh
+docker pull spartakus/coliseum:0.0.3
+```
+
+Then you can run the container with these parameters:
+* `--rm` cleans the container at shutdown
+* `-it` starts the container in iteractive mode
+* `-m 8g` allocates `8Gb` to the container
+* `--net=host` means that the container isn't using a dedicated (virtalized) network, but the current host one (on Mac this is the networking used by the virtual machine though)
+
+```sh
+docker run --rm -it -m 8g --net=host spartakus/coliseum:0.0.3 bash
+```
+
+> Note for developers, check the **Development** section below.
+
+## Start
+In the started shell, use the following commands
+
+```bash
+source var.sh
+source start.sh
+source create.sh
+```
+
+## Access
+> **For Mac, Msft users**:
+> 
+> You're running docker via a VM then you need to replace `localhost` by the VM's IP which can be retrieved this way.
+> ```sh
+> boot2docker ip
+> ```
+
+Open browser at [http://localhost:9000/tree/coliseum](http://localhost:9000/tree/coliseum).
+
+# Development
 ## Build
 ```bash
-docker build -t spartakus/coliseum:0.0.2 .
+docker build -t spartakus/coliseum:0.0.3 .
 ```
 
 ## Dependencies
@@ -15,31 +54,32 @@ Until libraries are deployed publicly, we'll have to build them locally in
 
 Then refer them from the notebooks using the artifact id in the metadata, and we mount the local repository in the docker container (see below section).
 
-### Deploy dependencies
-#### Mean-Shift LSH
+## Deploy dependencies
+### Mean-Shift LSH
 On the host machine (that runs docker), we need to deploy the dependency locally, then we'll make it available in docker (using folder mounting).
 
 
 ```sh
 git clone https://github.com/Spark-clustering-notebook/Mean-Shift-LSH.git
 cd Mean-Shift-LSH
-git checkout spark-1.6 # unless https://github.com/Spark-clustering-notebook/Mean-Shift-LSH/pull/1 is merged
 sbt publishM2
 sbt publishLocal
 ```
 
-#### G-Stream
+When ready to release on Bintray, use `publish` instead.
+
+### G-Stream
 
 ```sh
 git clone https://github.com/Spark-clustering-notebook/G-stream.git
 cd G-stream
-git checkout sbt-bump-spark # unless https://github.com/Spark-clustering-notebook/G-stream/pull/1
 sbt publishM2
 sbt publishLocal
 ```
 
+When ready to release on Bintray, use `publish` instead.
 
-## Run
+## Run container
 This uses a variable `LOCAL_NOTEBOOKS` which refers to a local directory containing the notebooks you want to include and keep up to date during the session.
 
 Another folder you might want to sync is the data dir, which uses `LOCAL_DATA` then.
@@ -58,20 +98,6 @@ docker run \
            --rm -it -m 8g \
            -p 19000:9000 \
            -p 14040:4040 -p 14041:14041 -p 14042:4042 -p 14043:14043 \
-           spartakus/coliseum:0.0.1 \
+           spartakus/coliseum:0.0.3 \
            bash
 ```
-
-Then
-```bash
-source var.sh
-source start.sh
-source create.sh
-```
-
-## Access
-Open browser at [http://localhost:19000/tree/coliseum](http://localhost:19000/tree/coliseum).
-
-> WARN:
-> 
-> If you're running docker via a VM (Mac, Msft, ...) then you need to replace `localhost` by the VM's IP (>boot2docker  ip).
