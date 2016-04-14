@@ -1,0 +1,191 @@
+{
+  "metadata" : {
+    "name" : "SOM",
+    "user_save_timestamp" : "1970-01-01T00:00:00.000Z",
+    "auto_save_timestamp" : "1970-01-01T00:00:00.000Z",
+    "language_info" : {
+      "name" : "scala",
+      "file_extension" : "scala",
+      "codemirror_mode" : "text/x-scala"
+    },
+    "trusted" : true,
+    "customLocalRepo" : "${HOME}/.ivy2",
+    "customRepos" : [ "spartakus % default % http://dl.bintray.com/spark-clustering-notebook/maven % maven" ],
+    "customDeps" : [ "spartakus %% som-mr % 1.0" ],
+    "customImports" : null,
+    "customArgs" : null,
+    "customSparkConf" : {
+      "spark.executor.memory" : "1024m",
+      "spark.cassandra.connection.host" : "127.0.0.1",
+      "spark.cores.max" : "2",
+      "spark.executor.cores" : "2",
+      "spark.master" : "local[*]"
+    }
+  },
+  "cells" : [ {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "AC7935948E01448AB19FBD84051FD9CE"
+    },
+    "cell_type" : "code",
+    "source" : "import org.lipn.som.som.RunSom",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "FB11A7E78979421B8958BC57F21920B4"
+    },
+    "cell_type" : "code",
+    "source" : "val dataFile = \"/root/data/coliseum/datasetM.txt\"",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "DAE45C28F3F947E48798868BF10DC2BE"
+    },
+    "cell_type" : "code",
+    "source" : ":sh head -n 10 $dataFile",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "830EE83C78174D4294CC1D15B8F1F4C6"
+    },
+    "cell_type" : "code",
+    "source" : "val strippedFile = \"/tmp/SOM-test-M.csv\"",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : true,
+      "id" : "5E96306C24764B9C8114493F9DF25FE5"
+    },
+    "cell_type" : "code",
+    "source" : "sparkContext.textFile(dataFile).map(_.split(\",\").take(3).mkString(\",\"))\n            .saveAsTextFile(strippedFile)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "8EE29127ED11496E90C070C201CB749F"
+    },
+    "cell_type" : "code",
+    "source" : "RunSom.exec(\n  intputFile = strippedFile,\n  sep = \",\",\n  outputDir = \"/tmp/SOM\",\n  nbRow = 5,//10,\n  nbCol = 5,//10,\n  tmin = 8,\n  tmax = 0.9,\n  convergeDist = -0.001,\n  maxIter = 30\n)(sparkContext)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "966838B848304D32843D3DF984AD9866"
+    },
+    "cell_type" : "code",
+    "source" : "val originalData = sparkContext.textFile(strippedFile)\n                                .map(_.split(\",\").map(_.toDouble))\n                                .map{\n                                  case Array(x,y,_) => (x,y)\n                                }",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "2638F50E3EFB40DCA0C514C62A859FE6"
+    },
+    "cell_type" : "code",
+    "source" : "val sampleOriginal = originalData.sample(false, 1000d/originalData.count).collect",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "FA27E7C5756F48F4BBB63520D023AD66"
+    },
+    "cell_type" : "code",
+    "source" : "ScatterChart(sampleOriginal.sortBy(_._1))",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "DDAAB92D0D4A441682C845AB83CEC8BD"
+    },
+    "cell_type" : "code",
+    "source" : "val prediction = sparkContext.textFile(\"/tmp/SOM/assignDatas\")\nval trainedModel = sparkContext.textFile(\"/tmp/SOM/model\")",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "8309AAE1B4134B5294BA02C136F7C2F3"
+    },
+    "cell_type" : "code",
+    "source" : "val sqlc = new org.apache.spark.sql.SQLContext(sparkContext)\nimport sqlc.implicits._",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "65F47EB8A5C34BC184A795EBB1676AD9"
+    },
+    "cell_type" : "code",
+    "source" : "val w = trainedModel.first",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "presentation" : {
+        "tabs_state" : "{\n  \"tab_id\": \"#tab1191465375-0\"\n}",
+        "pivot_chart_state" : "{\n  \"hiddenAttributes\": [],\n  \"menuLimit\": 200,\n  \"cols\": [],\n  \"rows\": [],\n  \"vals\": [],\n  \"exclusions\": {},\n  \"inclusions\": {},\n  \"unusedAttrsVertical\": 85,\n  \"autoSortUnusedAttrs\": false,\n  \"inclusionsInfo\": {},\n  \"aggregatorName\": \"Count\",\n  \"rendererName\": \"Table\"\n}"
+      },
+      "id" : "C8788356E8124244815679777739C737"
+    },
+    "cell_type" : "code",
+    "source" : "val protos = trainedModel.map{ w => \n               val Array(ox,oy) = w.trim.init.tail.takeWhile(_ != ')').trim.split(\",\").map(_.toDouble)\n               val Array(x,y) = w.init.tail.dropWhile(_ != '>').tail.trim.init.tail.split(\",\").map(_.toDouble)\n              ((ox,oy), (x,y))\n             }\n             .collect\n             .sortBy(_._1)\n             .map(_._2)",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "6B8CC2AD4F0A443C89E97AF8652FE7B1"
+    },
+    "cell_type" : "code",
+    "source" : "val matrix = protos.sliding(5,5).toArray",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "2F00E520FB2C42458CE814138EFD733C"
+    },
+    "cell_type" : "code",
+    "source" : "val dataNodes:Array[Graph[String]] = sampleOriginal.map{ case (x,y) => \n                                            Node[String](s\"${(x,y)}\", (x,y), \"#00F\", 5, Some((x,1200-y)), true) \n                                           }\nval nodes:Array[Graph[String]] = protos.map{ case (x,y) => \n                                            Node[String](s\"${(x,y)}\", (x,y), \"#F00\", 5, Some((x,1200-y)), true) \n                                           }\nval edges:Array[Graph[String]] = (for {\n              i <- 1 to 5\n              j <- 1 to 5\n            } yield List(\n                (i, j+1),\n                (i, j-1),\n                (i+1, j),\n                (i-1, j)\n              ).filter { \n                  case (x,y) => x >= 1 && x <= 5 && y >= 1 && y <= 5 \n              }.map{ \n                  case (x,y) => (matrix(i-1)(j-1)) -> matrix(x-1)(y-1) \n              }).flatten.map{ case (s,t) =>\n                Edge[String](s\"$s-$t\", (\"\"+s, \"\"+t), (), color=\"#F00\")\n              }.toArray",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "A04628B268984661A0AD306F4DC9FE6D"
+    },
+    "cell_type" : "code",
+    "source" : "GraphChart(dataNodes ++ nodes ++ edges, sizes=(1200, 1200))",
+    "outputs" : [ ]
+  } ],
+  "nbformat" : 4
+}
