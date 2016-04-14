@@ -10,7 +10,9 @@
     },
     "trusted" : true,
     "customLocalRepo" : null,
-    "customRepos" : null,
+    "customRepos" : [
+      "spartakus % default % http://dl.bintray.com/spark-clustering-notebook/maven % maven"
+    ],
     "customDeps" : [ "batchstream %% batchstream % 1.0" ],
     "customImports" : null,
     "customArgs" : null,

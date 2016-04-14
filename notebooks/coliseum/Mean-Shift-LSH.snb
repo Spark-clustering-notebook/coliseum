@@ -10,7 +10,9 @@
     },
     "trusted" : true,
     "customLocalRepo" : "${HOME}/.ivy2",
-    "customRepos" : null,
+    "customRepos" : [
+      "spartakus % default % http://dl.bintray.com/spark-clustering-notebook/maven % maven"
+    ],
     "customDeps" : [ "spartakus %% neirest-neighbours-mean-shift-lsh % 1.0", "org.apache.sanselan % sanselan % 0.97-incubator" ],
     "customImports" : null,
     "customArgs" : null,
