@@ -77,6 +77,16 @@ sbt publishM2
 sbt publishLocal
 ```
 
+### SOM-MR
+
+```sh
+git clone https://github.com/Spark-clustering-notebook/SOM-MR-2.git
+cd SOM-MR-2
+sbt publishM2
+sbt publishLocal
+```
+
+
 When ready to release on Bintray, use `publish` instead.
 
 ## Run container
