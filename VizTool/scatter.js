@@ -14,7 +14,7 @@ function getFeatures(data) {
   return resArray;
 }
 
-
+// Draw scatter PLot
 function scatterPlot(data) {
 
   cleanupScatter()
@@ -186,7 +186,7 @@ function scatterPlot(data) {
 
 
 
-
+// Add select button to choose which clusters/features to show and apply the choice
 function selectClusterFeaturesScatter(data) {
 
   socle = d3.select("div.menu1");
@@ -232,6 +232,8 @@ function selectClusterFeaturesScatter(data) {
           .text(function(){ return featuresIDs[ind1];});
   }
 
+
+  // Executes user choice at each change
   clusterChoice.on("change",function() {
 
     var cluster = document.getElementById("clusterChoice");
@@ -248,12 +250,14 @@ function selectClusterFeaturesScatter(data) {
       if (features.options[i].selected) { 
         tabElemSelect2.push(features.options[i].value) };
     };
+    // format data
     var data1 = chooseClusterIDsScatter(data,tabElemSelect)
     var data2 = chooseFeatures0Scatter(data1,tabElemSelect2)
     infoCluster(data2)
     scatterPlot(data2)
   });
 
+  // Executes user choice at each change
   featuresChoice.on("change",function() {
 
     var lol = document.getElementById("clusterChoice");
@@ -270,6 +274,7 @@ function selectClusterFeaturesScatter(data) {
       if (features.options[i].selected) { 
         tabElemSelect2.push(features.options[i].value) };
     };
+    // format data
     var data1 = chooseClusterIDsScatter(data,tabElemSelect)
     var data2 = chooseFeatures0Scatter(data1,tabElemSelect2)
     infoCluster(data2)

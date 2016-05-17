@@ -1,3 +1,4 @@
+// Genreate background and menu interfaces
 function cleanup() {
 	d3.select("#socle").remove()
 	d3.select("div.visu").remove()
@@ -35,7 +36,7 @@ function cleanup2() {
 	d3.select("div.menu").append("div").classed("menu2",true);
 }
 
-
+// Prepare background for scatter plot
 function cleanupScatter() {
 
 	d3.select("div.visu").remove()
@@ -47,6 +48,7 @@ function cleanupScatter() {
 	d3.select("#magic").on("click",function(){$(document).ready(function(){jqueryHideMenu()})})
 }
 
+// Prepare background for parrallel coordinate
 function cleanupPC() {
 
 	d3.select("div.visu").remove()
