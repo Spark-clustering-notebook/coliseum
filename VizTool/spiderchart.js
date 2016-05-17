@@ -9,6 +9,9 @@
 //http://nbremer.blogspot.nl/2013/09/making-d3-radar-chart-look-bit-better.html
 
 var RadarChart = {
+  // where id is the div where draw
+  // d is : Array[Array[Object[axis:"String",value:Float]]]
+  // options are a config file to replace default cfg values
   draw: function(id, d, options){
   var cfg = {
 	 radius: 5,

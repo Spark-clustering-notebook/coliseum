@@ -15,6 +15,7 @@ function getFeatures(data) {
 }
 
 // Draw scatter PLot
+// Where data is : Array[Object[cardinality,clusterID,vector[1,2,...,n]]]
 function scatterPlot(data) {
 
   cleanupScatter()

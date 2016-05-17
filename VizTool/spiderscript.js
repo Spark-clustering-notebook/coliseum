@@ -56,6 +56,11 @@ function chooseFeatures0(data,choosenFeatures) {
 	return resArray;
 }
 
+
+
+
+
+// Select clusters by their ID
 function chooseClusterIDsScatter(array,IDsArray) {
 	var array1 = [];
 	for (var i = array.length - 1; i >= 0; i--) {
@@ -66,6 +71,8 @@ function chooseClusterIDsScatter(array,IDsArray) {
 	return array1;
 }
 
+// Select features by their ID
+// To apply after chooseClusterIDsScatter
 function chooseFeatures0Scatter(data,choosenFeatures) {
 	var resArray = [];
 	for (var i = data.length - 1; i >= 0; i--) {
@@ -98,6 +105,7 @@ function prepareDataToFitSpiderChart(data) {
 }
 
 //	data = tab d'obj ou obj{clustID,card,ObjVect}
+// Let user chose which clusters/features he want to show.
 function selectClusterFeaturesSpider(data,mycfg) {
 
 	console.log(data)

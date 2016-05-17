@@ -63,6 +63,8 @@ function traitSelect(array) {
 }
 
 // Draw parallelcoordinate visualization
+// ww is the width of the draw area
+// data is Array[Object[1:float, 2:float,...,n:float, _cardinality, _clusterID]]
 function drawParallelCoordinate(data,ww) {
 
   // Cleanup drawn area in order to make a new one
