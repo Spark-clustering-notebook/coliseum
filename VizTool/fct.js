@@ -28,6 +28,7 @@ function jqueryShowMenu() {
 }
 */
 
+// Draw upload area
 function upload() {
 
 	var menu11 = d3.select("div.menu1")
@@ -137,7 +138,7 @@ function csvStringtoFloat(array) {
 	return array0;
 }
 
-
+// Append option menu to select the type of visualisation 
 function gridChoice(data) {
 	var menu = d3.select("div.menu1")
 
