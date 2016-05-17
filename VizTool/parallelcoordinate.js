@@ -62,9 +62,10 @@ function traitSelect(array) {
     return array1;
 }
 
-
+// Draw parallelcoordinate visualization
 function drawParallelCoordinate(data,ww) {
 
+  // Cleanup drawn area in order to make a new one
   cleanupPC()
 
   var species = speciesSelect(data)
@@ -100,7 +101,7 @@ function drawParallelCoordinate(data,ww) {
 
 
   var accessorD3 = function(d) { return d["_cardinality"];} 
-  console.log(species)
+  //console.log(species)
   var strokeWidthScale = d3.scale.linear().domain([d3.min(data,accessorD3),d3.max(data,accessorD3)]).range([1,10])
 
   var colorScale = d3.scale.ordinal().domain(species).range(["#1f77b4","#aec7e8","#ff7f0e","#ffbb78","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5","#8c564b","#c49c94","#e377c2","#f7b6d2","#7f7f7f","#c7c7c7","#bcbd22","#dbdb8d","#17becf","#9edae5","#393b79","#5254a3","#6b6ecf","#9c9ede","#637939","#8ca252","#b5cf6b","#cedb9c","#8c6d31","#bd9e39","#e7ba52","#e7cb94","#843c39","#ad494a","#d6616b","#e7969c","#7b4173","#a55194","#ce6dbd","#de9ed6","#6baed6","#9ecae1","#c6dbef","#e6550d","#fd8d3c","#fdae6b","#fdd0a2","#31a354","#74c476","#a1d99b","#c7e9c0","#756bb1","#9e9ac8","#bcbddc","#dadaeb","#636363","#969696","#bdbdbd","#d9d9d9"])
@@ -209,14 +210,19 @@ function drawParallelCoordinate(data,ww) {
   }
 }
 
-function selectClusterFeaturesPC(data) {
 
+// Enable to user to choose which cluster or features he want to visualize
+function selectClusterFeaturesPC(data) {
+ 
+  // div.menu1 is outside the visu, see http://www.beckgael.fr/Clustering_Visualisation_Tool2/
+  // If we can propose a form inside the notebook to the user instead of using this way, it would be better i guess
   socle = d3.select("div.menu1");
+  // select button to choose cluster
   var clusterChoice = socle.append("select")
                 .attr("id","clusterChoice")
                 .attr("multiple",true)
                 .attr("size","8");
-
+  // select button to choose features
   var featuresChoice = socle.append("select")
                 .attr("id","featuresSelected")
                 .attr("multiple",true)
@@ -254,6 +260,7 @@ function selectClusterFeaturesPC(data) {
           .text(function(){ return featuresIDs[ind1];});
   }
 
+  // we update the visualisation from our select cluster button
   clusterChoice.on("change",function() {
 
     var cluster = document.getElementById("clusterChoice");
@@ -277,6 +284,7 @@ function selectClusterFeaturesPC(data) {
     drawParallelCoordinate(data3,( Object.size(data3[0]) - 2 )*100 )
   });
 
+  // we update the visualisation from our select features button
   featuresChoice.on("change",function() {
 
     var lol = document.getElementById("clusterChoice");
