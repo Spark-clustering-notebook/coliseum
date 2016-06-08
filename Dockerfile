@@ -30,14 +30,14 @@ RUN \
  RUN \
  cd /root \
  && wget https://s3.eu-central-1.amazonaws.com/spark-notebook/traning/apache-cassandra-2.2.0-bin.tar.gz \
- && tar xvzf apache-cassandra-2.2.0-bin.tar.gz \
+ && tar xzf apache-cassandra-2.2.0-bin.tar.gz \
  && rm apache-cassandra-2.2.0-bin.tar.gz
 
 # Apache Kafka (Confluent Distribution)
 RUN \
  cd /root \
  && wget https://s3.eu-central-1.amazonaws.com/spark-notebook/traning/confluent-1.0-2.10.4.tar.gz \
- && tar xvzf confluent-1.0-2.10.4.tar.gz \
+ && tar xzf confluent-1.0-2.10.4.tar.gz \
  && rm confluent-1.0-2.10.4.tar.gz
 
 # SBT
@@ -46,7 +46,7 @@ ADD https://dl.bintray.com/sbt/native-packages/sbt/0.13.8/sbt-0.13.8.tgz /root/
 
 RUN \
  cd /root/ \
- && tar xvzf sbt-0.13.8.tgz \
+ && tar xzf sbt-0.13.8.tgz \
  && rm sbt-0.13.8.tgz
 
 
@@ -54,7 +54,7 @@ RUN \
 RUN \
  cd /root \
  && wget https://s3-eu-west-1.amazonaws.com/data-fellas-coliseum/spark-notebook-0.7.0-SNAPSHOT-scala-2.10.5-spark-1.6.0-hadoop-2.2.0-with-hive-with-parquet.tgz \
- && tar xvzf spark-notebook-*tgz --warning=no-timestamp \
+ && tar xzf spark-notebook-*tgz --warning=no-timestamp \
  && rm spark-notebook-*tgz \
  && mv spark-notebook-* spark-notebook
 
