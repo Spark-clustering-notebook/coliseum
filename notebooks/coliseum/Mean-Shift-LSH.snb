@@ -10,9 +10,7 @@
     },
     "trusted" : true,
     "customLocalRepo" : "${HOME}/.ivy2",
-    "customRepos" : [
-      "spartakus % default % http://dl.bintray.com/spark-clustering-notebook/maven % maven"
-    ],
+    "customRepos" : [ "spartakus % default % http://dl.bintray.com/spark-clustering-notebook/maven % maven" ],
     "customDeps" : [ "spartakus %% neirest-neighbours-mean-shift-lsh % 1.0", "org.apache.sanselan % sanselan % 0.97-incubator" ],
     "customImports" : null,
     "customArgs" : null,
@@ -70,22 +68,44 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "181C579361B5487A9A4872AB24C68BC7"
     },
     "cell_type" : "code",
     "source" : "import org.apache.sanselan.color.ColorConversions._",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "import org.apache.sanselan.color.ColorConversions._\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 15
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "BACAFA6383D441B082B381A957BDDC99"
     },
     "cell_type" : "code",
     "source" : "def toLUV(bni:java.awt.image.BufferedImage, x:Int, y:Int) = {\n  //val xyz = org.apache.commons.imaging.color.ColorConversions.convertRGBtoXYZ(bni.getRGB(x,y))\n  val xyz = convertRGBtoXYZ(bni.getRGB(x,y))\n  val luv = convertXYZtoCIELuv(xyz)\n  (x+1, y+1, luv.L, luv.u, luv.v)\n}\ndef toRGB(L:Double, u:Double, v:Double) = {\n  val xyz = convertCIELuvtoXYZ(L, u, v)\n  val rgb = convertXYZtoRGB(xyz)\n  rgb\n}",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "toLUV: (bni: java.awt.image.BufferedImage, x: Int, y: Int)(Int, Int, Double, Double, Double)\ntoRGB: (L: Double, u: Double, v: Double)Int\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 16
+    } ]
   }, {
     "metadata" : {
       "id" : "A0F0B604F7994E588B7428FBFA5D7E4E"
@@ -108,62 +128,128 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "7F35A36C2A1443848C2B7E341BC7FD1A"
     },
     "cell_type" : "code",
     "source" : "val imgpath = \"/root/data/coliseum/124084-orig.jpg\"",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "imgpath: String = /root/data/coliseum/124084-orig.jpg\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 12
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "663D86D7FF164DC7833801D49DDB5820"
     },
     "cell_type" : "code",
     "source" : "val bni = javax.imageio.ImageIO.read(new File(imgpath))",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "bni: java.awt.image.BufferedImage = BufferedImage@4d0e4da0: type = 5 ColorModel: #pixelBits = 24 numComponents = 3 color space = java.awt.color.ICC_ColorSpace@52423b3 transparency = 1 has alpha = false isAlphaPre = false ByteInterleavedRaster: width = 481 height = 321 #numDataElements 3 dataOff[0] = 2\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 13
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "D65BF716451D40CF9010B9D3F094C314"
     },
     "cell_type" : "code",
     "source" : "val h = bni.getHeight\nval w = bni.getWidth",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "h: Int = 321\nw: Int = 481\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 14
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "95DCC9B4242441D687ED7CD609246EB9"
     },
     "cell_type" : "code",
     "source" : "val luvs = for {\n  r <- 0 until h\n  c <- 0 until w\n} yield toLUV(bni, c, r)",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "luvs: scala.collection.immutable.IndexedSeq[(Int, Int, Double, Double, Double)] = Vector((1,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (2,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (3,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (4,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (5,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (6,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (7,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (8,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (9,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (10,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (11,1,3.5595796218256233,-0.89784549889479,0.8906243600421717), (12,1,3.55957..."
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 17
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "717D6456E89F46F8B62DA04E1A1404FC"
     },
     "cell_type" : "code",
     "source" : "val outputCSV = new File(\"/root/data/coliseum/output/124084-luv.jpg.csv\")\nif (outputCSV.exists) outputCSV.delete",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "outputCSV: java.io.File = /root/data/coliseum/output/124084-luv.jpg.csv\nres20: AnyVal = true\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : "true"
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 18
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "D8DBCFFF12EB4A8AB6F98847B19F7E0D"
     },
     "cell_type" : "code",
     "source" : "val writer = new java.io.FileWriter(outputCSV)\nwriter.write(\"\"\" \"x\",\"y\",\"L\",\"u\",\"v\" \"\"\".trim)\nluvs.foreach { case (x, y, l, u, v) =>\n  writer.write(s\"\\n$x,$y,$l,$u,$v\")\n}\nwriter.flush\nwriter.close",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "writer: java.io.FileWriter = java.io.FileWriter@47a19bb8\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 14
+    } ]
   }, {
     "metadata" : {
       "id" : "523552796BF4454B8A7AE0F5B57A440B"
@@ -180,12 +266,23 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "2CD1660329D3459AA6A1F460F526E8A0"
     },
     "cell_type" : "code",
     "source" : "val defp = sparkContext.defaultParallelism\nval meanShift = msLsh.MsLsh",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "defp: Int = 8\nmeanShift: msLsh.MsLsh.type = msLsh.MsLsh$@53b57113\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 15
+    } ]
   }, {
     "metadata" : {
       "id" : "5AC52214318B42E680DDEFCBA80250F2"
@@ -196,12 +293,23 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "2DFED1EC049C4E448242E4DAA554953F"
     },
     "cell_type" : "code",
     "source" : "val data = sc.textFile(\"/root/data/coliseum/124084-luv.csv\", defp)",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "data: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[1] at textFile at <console>:62\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 16
+    } ]
   }, {
     "metadata" : {
       "id" : "5D43FDA739CD4EE6B2E6CE42FAC976D3"
@@ -212,12 +320,23 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "FA3F7315EA544FC982FB8ABAB2768B74"
     },
     "cell_type" : "code",
     "source" : "val parsedData = data.filter(!_.startsWith(\"\\\"\")).map(x => x.split(','))\n                     .map(y => org.apache.spark.mllib.linalg.Vectors.dense(y.map(_.toDouble)))\n                     .zipWithIndex.map(_.swap)\n                     .map(x => (x._1.toString, x._2)).cache",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "parsedData: org.apache.spark.rdd.RDD[(String, org.apache.spark.mllib.linalg.Vector)] = MapPartitionsRDD[7] at map at <console>:67\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 17
+    } ]
   }, {
     "metadata" : {
       "id" : "5F6899541A9E4BFA8D865D1700DB3722"
@@ -228,12 +347,23 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "0EDDEECCF3A6430498B5359548AFF624"
     },
     "cell_type" : "code",
     "source" : "val sqlc = new org.apache.spark.sql.SQLContext(sparkContext)\nimport sqlc.implicits._",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "sqlc: org.apache.spark.sql.SQLContext = org.apache.spark.sql.SQLContext@283c4540\nimport sqlc.implicits._\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 8
+    } ]
   }, {
     "metadata" : {
       "id" : "5D3BB8DAA05A4F78BCBB5D042BC0D0C8"
@@ -244,12 +374,23 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "E77754F4948E418180CDE925893AFF8F"
     },
     "cell_type" : "code",
     "source" : "parsedData.toDF",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "res24: org.apache.spark.sql.DataFrame = [_1: string, _2: vector]\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : "<div class=\"df-canvas\">\n      <script data-this=\"{&quot;dataId&quot;:&quot;anon544760d491b076ae55232e9b6023509b&quot;,&quot;partitionIndexId&quot;:&quot;anon646071336286b5c5e6779bd151fb84f8&quot;,&quot;numPartitions&quot;:6177,&quot;dfSchema&quot;:{&quot;type&quot;:&quot;struct&quot;,&quot;fields&quot;:[{&quot;name&quot;:&quot;_1&quot;,&quot;type&quot;:&quot;string&quot;,&quot;nullable&quot;:true,&quot;metadata&quot;:{}},{&quot;name&quot;:&quot;_2&quot;,&quot;type&quot;:{&quot;type&quot;:&quot;udt&quot;,&quot;class&quot;:&quot;org.apache.spark.mllib.linalg.VectorUDT&quot;,&quot;pyClass&quot;:&quot;pyspark.mllib.linalg.VectorUDT&quot;,&quot;sqlType&quot;:{&quot;type&quot;:&quot;struct&quot;,&quot;fields&quot;:[{&quot;name&quot;:&quot;type&quot;,&quot;type&quot;:&quot;byte&quot;,&quot;nullable&quot;:false,&quot;metadata&quot;:{}},{&quot;name&quot;:&quot;size&quot;,&quot;type&quot;:&quot;integer&quot;,&quot;nullable&quot;:true,&quot;metadata&quot;:{}},{&quot;name&quot;:&quot;indices&quot;,&quot;type&quot;:{&quot;type&quot;:&quot;array&quot;,&quot;elementType&quot;:&quot;integer&quot;,&quot;containsNull&quot;:false},&quot;nullable&quot;:true,&quot;metadata&quot;:{}},{&quot;name&quot;:&quot;values&quot;,&quot;type&quot;:{&quot;type&quot;:&quot;array&quot;,&quot;elementType&quot;:&quot;double&quot;,&quot;containsNull&quot;:false},&quot;nullable&quot;:true,&quot;metadata&quot;:{}}]}},&quot;nullable&quot;:true,&quot;metadata&quot;:{}}]}}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/req(['../javascripts/notebook/dataframe','../javascripts/notebook/consoleDir'], \n      function(dataframe, extension) {\n        dataframe.call(data, this, extension);\n      }\n    );/*]]>*/</script>\n      <link rel=\"stylesheet\" href=\"/assets/stylesheets/ipython/css/dataframe.css\" type=\"text/css\"/>\n    </div>"
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 19
+    } ]
   }, {
     "metadata" : {
       "id" : "A6F20DD554F64F29B7140896785BD031"
@@ -260,12 +401,23 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "7DFA71ADF24645BE84F35C312F7FEDF9"
     },
     "cell_type" : "code",
     "source" : "var model:msLsh.mean_shift_lsh_model = null",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "model: msLsh.mean_shift_lsh_model = null\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 20
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
@@ -275,7 +427,18 @@
     },
     "cell_type" : "code",
     "source" : "val logTrain = out\nlogTrain",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "logTrain: notebook.front.SingleConnectedWidget[String]{implicit val codec: notebook.Codec[play.api.libs.json.JsValue,String]; lazy val toHtml: scala.xml.Elem} = <anon$2 widget>\nres27: notebook.front.SingleConnectedWidget[String]{implicit val codec: notebook.Codec[play.api.libs.json.JsValue,String]; lazy val toHtml: scala.xml.Elem} = <anon$2 widget>\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : "<p data-bind=\"text: value\"><script data-this=\"{&quot;valueId&quot;:&quot;anon10641c6036f658ce7b11aeb744b75b45&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/\nreq(\n['observable', 'knockout'],\nfunction (O, ko) {\n  ko.applyBindings({\n      value: O.makeObservable(valueId)\n    },\n    this\n  );\n});\n        /*]]>*/</script></p>"
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 21
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
@@ -285,7 +448,18 @@
     },
     "cell_type" : "code",
     "source" : "Form[Map[String,String]](\n  d = Map(\n    \"k\" -> \"60\",\n    \"threshold_cluster\" -> \"0.05\",\n    \"yStarIter\" -> \"10\",\n    \"cmin\" -> \"0\",\n    \"normalisation\" -> \"true\",\n    \"w\" -> \"1\",\n    \"nbseg\" -> \"100\",\n    \"nbblocs\" -> \"50\"\n  ), \n  mainTitle = \"Tune the model\", \n  paramsToData = identity[Map[String,String]], \n  dataToParams = identity[Map[String,String]]\n) { map =>\n  logTrain(\"Starting Model Training\")\n  model = meanShift.train(sparkContext,\n                            parsedData,\n                            map(\"k\").toInt,\n                            map(\"threshold_cluster\").toDouble,\n                            map(\"yStarIter\").toInt,\n                            map(\"cmin\").toInt,\n                            map(\"normalisation\").toBoolean,\n                            map(\"w\").toInt,\n                            map(\"nbseg\").toInt,\n                            map(\"nbblocs\").toInt,\n                            nbPart=defp\n                          )\n  logTrain(\"Model trained\")\n}",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "res29: notebook.front.widgets.Form[Map[String,String]] = <anon$1 widget>\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : "<div><script data-this=\"{&quot;valueId&quot;:&quot;anonab4a3606a9c6c74572b64d245d542e07&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/req(\n          ['observable', 'knockout', 'jquery'],\n          function (Observable, ko, $) {\n            var value = Observable.makeObservable(valueId);\n            var publishFormData = function(form) {\n              var r = $(form).serializeArray();\n              var result = {};\n              r.forEach(function(o) {\n                result[o.name] = o.value;\n              });\n              value(result);\n            };\n            var addEntry = function(form) {\n              var entry = $(form).serializeArray()[0];\n              $(\"#_8e30987e_2a51_4454_afd1_511ce43a0f79\").find(\"button\")\n                                     .before(\"<div class='form-group'><label for-name='\"+entry.value+\"'>\"+entry.value+\"</label><input class='form-control' name='\"+entry.value+\"' value=''/></div>\")\n            };\n            ko.applyBindings({\n              formShown:        ko.observable(true),\n              value:            value,\n              publishFormData:  publishFormData,\n              addEntry:         addEntry\n            }, this);\n          }\n        )/*]]>*/</script>\n    <span class=\"help-block\">\n      <input type=\"checkbox\" data-bind=\"checked: formShown\"/><strong>Tune the model</strong>\n    </span>\n    <div data-bind=\"if: formShown\">\n      <form role=\"form\" id=\"_8e30987e_2a51_4454_afd1_511ce43a0f79\" data-bind=\"submit: publishFormData\">\n        <div class=\"form-group\">\n              <label for-name=\"threshold_cluster\">threshold_cluster</label>\n              <input name=\"threshold_cluster\" value=\"0.05\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"cmin\">cmin</label>\n              <input name=\"cmin\" value=\"0\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"yStarIter\">yStarIter</label>\n              <input name=\"yStarIter\" value=\"10\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"normalisation\">normalisation</label>\n              <input name=\"normalisation\" value=\"true\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"nbblocs\">nbblocs</label>\n              <input name=\"nbblocs\" value=\"50\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"w\">w</label>\n              <input name=\"w\" value=\"1\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"nbseg\">nbseg</label>\n              <input name=\"nbseg\" value=\"100\" class=\"form-control\"/>\n            </div><div class=\"form-group\">\n              <label for-name=\"k\">k</label>\n              <input name=\"k\" value=\"60\" class=\"form-control\"/>\n            </div>\n        <button type=\"submit\" class=\"btn btn-default\">Apply</button>\n      </form>\n      <form data-bind=\"submit: addEntry\" role=\"form\" class=\"hide\">\n        <div class=\"form-group\">\n          <label for-name=\"add-entry\">Add entry</label>\n          <input name=\"add-entry\" class=\"form-control\" type=\"text\"/>\n        </div>\n        <button type=\"submit\" class=\"btn btn-default\">Add</button>\n      </form>\n    </div>\n  </div>"
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 22
+    } ]
   }, {
     "metadata" : {
       "id" : "9D93E4989A0C4D6988CB2EC3E119EEB5"
@@ -296,32 +470,61 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "05F298A3A56B4057AA2DC835C10DA548"
     },
     "cell_type" : "code",
     "source" : "val imageResultPath = \"/root/data/coliseum/output/MyImageResultDirectory\"",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "imageResultPath: String = /root/data/coliseum/output/MyImageResultDirectory\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 3
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "006C9B792A1C45BCBF71787290833C1A"
     },
     "cell_type" : "code",
     "source" : ":sh rm -rf $imageResultPath",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "\nimport sys.process._\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/plain" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 1
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "B7CE2DF0FDA947A484CBD24FF2AA1A22"
     },
     "cell_type" : "code",
     "source" : "// Results look's like RDD[ID,Centroïd_Vector,cluster_Number]\nmeanShift.saveImageAnalysis(model, imageResultPath,1)",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 2
+    } ]
   }, {
     "metadata" : {
       "id" : "C6AA8685036B4077AAE5B8CE13E0E3CE"
@@ -332,32 +535,61 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "9F4361C151AE441A9E58F50698889601"
     },
     "cell_type" : "code",
     "source" : "val resultDirPath = \"/root/data/coliseum/output/MyResultDirectory\"",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "resultDirPath: String = /root/data/coliseum/output/MyResultDirectory\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 4
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "94B903E6D54340158F4790457AD85918"
     },
     "cell_type" : "code",
     "source" : ":sh rm -rf $resultDirPath ",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "\nimport sys.process._\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/plain" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 4
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "811999536B594829A0D8B94633120091"
     },
     "cell_type" : "code",
     "source" : "meanShift.savelabeling(model, resultDirPath, 1)",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 5
+    } ]
   }, {
     "metadata" : {
       "id" : "1AD12FA2A56F419482773192F8FAB395"
@@ -368,32 +600,61 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "C11E5610C37042418035E3F5ED71A8EA"
     },
     "cell_type" : "code",
     "source" : "val centroidDirPath = \"/root/data/coliseum/output/centroidDirectory\"",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "centroidDirPath: String = /root/data/coliseum/output/centroidDirectory\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 1
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "D5BC944A011748F2BC9C4D45BBDAB437"
     },
     "cell_type" : "code",
     "source" : ":sh rm -rf $centroidDirPath",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "\nimport sys.process._\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/plain" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 7
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "72739559D66142618175FE0579C61CC1"
     },
     "cell_type" : "code",
     "source" : "meanShift.saveClusterInfo(sparkContext, model, centroidDirPath)",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 8
+    } ]
   }, {
     "metadata" : {
       "id" : "74B7BFA98AB04A93986E3D7EAE2CAACD"
@@ -404,52 +665,279 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "B1530C4E04E64062A86A97D26C8F8C6C"
     },
     "cell_type" : "code",
     "source" : "val resultImage = sparkContext.textFile(imageResultPath)",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "resultImage: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[1] at textFile at <console>:59\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 5
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "F0DC0A6BE8804CBE8965CF3316897322"
     },
     "cell_type" : "code",
     "source" : "val parsed = resultImage.map { s =>\n  val l = s.split(\",\").toList.map(_.replaceAll(\"[\\\\[\\\\]\\\\(\\\\)]\", \"\"))\n  val id = l.head.toInt\n  val centroid = org.apache.spark.mllib.linalg.Vectors.dense(l.tail.init.map(_.toDouble).toArray)\n  val cluster = l.last.toInt\n  (id, centroid, cluster)\n}",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "parsed: org.apache.spark.rdd.RDD[(Int, org.apache.spark.mllib.linalg.Vector, Int)] = MapPartitionsRDD[2] at map at <console>:61\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 6
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "BAE857AA59F5410881C8068F01AA57C0"
     },
     "cell_type" : "code",
     "source" : "val parsedDf = parsed.toDF",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "parsedDf: org.apache.spark.sql.DataFrame = [_1: int, _2: vector, _3: int]\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 9
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "F8F0FCD397814AF28F38672606E1D82A"
     },
     "cell_type" : "code",
     "source" : "val resArr = parsedDf.select(\"_2\").map(_.getAs[org.apache.spark.mllib.linalg.Vector](0)).map(_.toArray.toList).collect\nval resList = resArr.toList",
-    "outputs" : [ ]
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "resArr: Array[List[Double]] = Array(List(10.799050632911383, 64.8449367088606, 5.729509636814612, -0.17031177936535968, 3.4886706365799314), List(10.799050632911383, 64.8449367088606, 5.729509636814612, -0.17031177936535968, 3.4886706365799314), List(10.799050632911383, 64.8449367088606, 5.729509636814612, -0.17031177936535968, 3.4886706365799314), List(10.799050632911383, 64.8449367088606, 5.729509636814612, -0.17031177936535968, 3.4886706365799314), List(10.799050632911383, 64.8449367088606, 5.729509636814612, -0.17031177936535968, 3.4886706365799314), List(10.799050632911383, 64.8449367088606, 5.729509636814612, -0.17031177936535968, 3.4886706365799314), List(10.799050632911383, 64.8449367088606, 5.729509636814612, -0.17031177936535968, 3.4886706365799314), List(10.799050632911383, 6..."
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 10
+    } ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "3C01A0A3F16E42EC93CF94D87DEA3878"
+    },
+    "cell_type" : "code",
+    "source" : "import java.awt.image.BufferedImage\nval resImg = new BufferedImage(h, w, BufferedImage.TYPE_INT_RGB)\nval rbgs:Array[Int] = resArr.map{ case List(_, _, l, u, v) => toRGB(l, u, v) }.toArray\nresImg.setRGB(0, 0, h, w, rbgs, 0, h)\nval ii = img(\"jpg\", h+\"px\", w+\"px\")\nii(resImg)\nii",
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "import java.awt.image.BufferedImage\nresImg: java.awt.image.BufferedImage = BufferedImage@1c320a8f: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 321 height = 481 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0\nrbgs: Array[Int] = Array(-14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14013159, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -14737142, -10284794, -10284794, -10284794, -10284794, -10284794, -10284794, -14737142, -14737142, -14737142, -14..."
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : "<p>\n      <img width=\"321px\" height=\"481px\" data-bind=\"attr:{src: value}\"/>\n        <script data-this=\"{&quot;valueId&quot;:&quot;anonfa157235b6ffe4bc75fbb960a8c74a28&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/\nreq(\n['observable', 'knockout'],\nfunction (O, ko) {\n  ko.applyBindings({\n      value: O.makeObservable(valueId)\n    },\n    this\n  );\n});\n            /*]]>*/</script>\n      </p>"
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 19
+    } ]
   }, {
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
       "collapsed" : true,
-      "id" : "3C01A0A3F16E42EC93CF94D87DEA3878"
+      "id" : "F31A129C6A8D4B0480076B1EA89D75EB"
+    },
+    "cell_type" : "markdown",
+    "source" : "## Read Cluster Info"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "3209045F08D94FDA8BE62F3D8E5746DB"
     },
     "cell_type" : "code",
-    "source" : "import java.awt.image.BufferedImage\nval resImg = new BufferedImage(h, w, BufferedImage.TYPE_INT_RGB)\nval rbgs:Array[Int] = resArr.map{ case List(_, _, l, u, v) => toRGB(l, u, v) }.toArray\nresImg.setRGB(0, 0, h, w, rbgs, 0, h)\nval ii = img(\"jpg\", h+\"px\", w+\"px\")\nii(resImg)\nii",
-    "outputs" : [ ]
+    "source" : "val clusterInfo = sparkContext.textFile(centroidDirPath)",
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "clusterInfo: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[9] at textFile at <console>:68\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 21
+    } ]
+  }, {
+    "metadata" : {
+      "id" : "B8D78A041C454EF5828B833CFE07B4D1"
+    },
+    "cell_type" : "markdown",
+    "source" : "This RDD of string looks like this: `RDD[clusterLabel, cardinality, dim1Proto, dim2Proto, ..., dimNProto]`"
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "FE370810071F40E6A529AB3F941605AF"
+    },
+    "cell_type" : "code",
+    "source" : "clusterInfo.first",
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "res27: String = (0,1446,[298.6244813278013,44.78630705394189,7.330346896171524,-1.038438815500374,5.60948545263938])\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : "(0,1446,[298.6244813278013,44.78630705394189,7.330346896171524,-1.038438815500374,5.60948545263938])"
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 22
+    } ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "5E5D3D96BBFE43A9BC12D31D259A21DB"
+    },
+    "cell_type" : "code",
+    "source" : "val ciR = \"\"\"^\\(([0-9\\.-]+),([0-9\\.-]+),\\[([0-9\\.,-]+)\\]\\)$\"\"\".r",
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "ciR: scala.util.matching.Regex = ^\\(([0-9\\.-]+),([0-9\\.-]+),\\[([0-9\\.,-]+)\\]\\)$\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 28
+    } ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "7BCFB0137180419D80870E24D882E313"
+    },
+    "cell_type" : "code",
+    "source" : "val ci = clusterInfo.map {\n  case ciR(l, c, ar) => (l.toDouble, c.toDouble, ar.split(\",\").map(_.toDouble))  \n}",
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "ci: org.apache.spark.rdd.RDD[(Double, Double, Array[Double])] = MapPartitionsRDD[12] at map at <console>:72\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 35
+    } ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "872E872B5522486BA1D888257AD2E3F7"
+    },
+    "cell_type" : "code",
+    "source" : "assert(ci.first._3.size == 5)",
+    "outputs" : [ {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 38
+    } ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "8B96DC0415784F06859856588F9000B2"
+    },
+    "cell_type" : "code",
+    "source" : "ci.count",
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "res47: Long = 76\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : "76"
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 37
+    } ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "5A71A4797DD648248EFD05099CC94288"
+    },
+    "cell_type" : "code",
+    "source" : "val dimsData = ci.map {\n  case (l, c, ar) => (l, ar(0), ar(1), ar(2), ar(3), ar(4))\n}.toDF(\"label\", \"dim1\", \"dim2\", \"dim3\", \"dim4\", \"dim5\")",
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "dimsData: org.apache.spark.sql.DataFrame = [label: double, dim1: double, dim2: double, dim3: double, dim4: double, dim5: double]\n"
+    }, {
+      "metadata" : { },
+      "data" : {
+        "text/html" : ""
+      },
+      "output_type" : "execute_result",
+      "execution_count" : 39
+    } ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "AAFF3AFDD6E945FEA1B33D0B67094B8F"
+    },
+    "cell_type" : "code",
+    "source" : "RadarChart(dimsData, labelField=Some(\"label\"))",
+    "outputs" : [ {
+      "name" : "stdout",
+      "output_type" : "stream",
+      "text" : "<console>:78: error: not found: value RadarChart\n              RadarChart(dimsData, labelField=Some(\"label\"))\n              ^\n"
+    } ]
   } ],
   "nbformat" : 4
 }
