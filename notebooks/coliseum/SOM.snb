@@ -27,94 +27,6 @@
       "trusted" : true,
       "input_collapsed" : false,
       "collapsed" : false,
-      "id" : "A2308F39246646018488949C696480F1"
-    },
-    "cell_type" : "code",
-    "source" : "case class Data(name:String,strength:Int,intelligence:Int,charisma:Int,dexterity:Int,luck:Int)",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "defined class Data\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 9,
-      "time" : "Took: 307 milliseconds, at 2016-5-17 18:44"
-    } ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
-      "presentation" : {
-        "tabs_state" : "{\n  \"tab_id\": \"#tab815758215-0\"\n}",
-        "pivot_chart_state" : "{\n  \"hiddenAttributes\": [],\n  \"menuLimit\": 200,\n  \"cols\": [],\n  \"rows\": [],\n  \"vals\": [],\n  \"exclusions\": {},\n  \"inclusions\": {},\n  \"unusedAttrsVertical\": 85,\n  \"autoSortUnusedAttrs\": false,\n  \"inclusionsInfo\": {},\n  \"aggregatorName\": \"Count\",\n  \"rendererName\": \"Table\"\n}"
-      },
-      "id" : "CE3BD2BACAF84A41B26593805B83BADC"
-    },
-    "cell_type" : "code",
-    "source" : "val rdata = \"\"\"\nname,strength,intelligence,charisma,dexterity,luck\nHodor,19,2,4,4,7\nJon Snow,14,15,18,14,7\nTyrion Lannister,8,19,7,5,10\nEddard Stark,12,13,17,12,0\n\"\"\".split(\"\\n\").filterNot(_.trim.size == 0).drop(1).map(_.split(\",\").toList).map{case List(a,b,c,d,e,f) => Data(a,b.toInt,c.toInt,d.toInt,e.toInt,f.toInt)}",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "rdata: Array[Data] = Array(Data(Hodor,19,2,4,4,7), Data(Jon Snow,14,15,18,14,7), Data(Tyrion Lannister,8,19,7,5,10), Data(Eddard Stark,12,13,17,12,0))\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 10,
-      "time" : "Took: 450 milliseconds, at 2016-5-17 18:44"
-    } ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
-      "id" : "D1A275AD06874711847C98A4F3D145A8"
-    },
-    "cell_type" : "code",
-    "source" : "val r = RadarChart(rdata, labelField=Some(\"name\"))\nr",
-    "outputs" : [ {
-      "name" : "stdout",
-      "output_type" : "stream",
-      "text" : "r: notebook.front.widgets.charts.RadarChart[Array[Data]] = <RadarChart widget>\nres22: notebook.front.widgets.charts.RadarChart[Array[Data]] = <RadarChart widget>\n"
-    }, {
-      "metadata" : { },
-      "data" : {
-        "text/html" : "<div>\n      <script data-this=\"{&quot;dataId&quot;:&quot;anon6ac3d96bef4cc8dbd432af90a6006521&quot;,&quot;dataInit&quot;:[{&quot;name&quot;:&quot;Hodor&quot;,&quot;luck&quot;:7,&quot;dexterity&quot;:4,&quot;intelligence&quot;:2,&quot;charisma&quot;:4,&quot;strength&quot;:19},{&quot;name&quot;:&quot;Jon Snow&quot;,&quot;luck&quot;:7,&quot;dexterity&quot;:14,&quot;intelligence&quot;:15,&quot;charisma&quot;:18,&quot;strength&quot;:14},{&quot;name&quot;:&quot;Tyrion Lannister&quot;,&quot;luck&quot;:10,&quot;dexterity&quot;:5,&quot;intelligence&quot;:19,&quot;charisma&quot;:7,&quot;strength&quot;:8},{&quot;name&quot;:&quot;Eddard Stark&quot;,&quot;luck&quot;:0,&quot;dexterity&quot;:12,&quot;intelligence&quot;:13,&quot;charisma&quot;:17,&quot;strength&quot;:12}],&quot;genId&quot;:&quot;262786452&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/req(['../javascripts/notebook/playground','../javascripts/notebook/magic/radarChart'], \n      function(playground, _magicradarChart) {\n        // data ==> data-this (in observable.js's scopedEval) ==> this in JS => { dataId, dataInit, ... }\n        // this ==> scope (in observable.js's scopedEval) ==> this.parentElement ==> div.container below (toHtml)\n\n        playground.call(data,\n                        this\n                        ,\n                        {\n    \"f\": _magicradarChart,\n    \"o\": {\"classCol\":\"name\",\"axisCols\":[\"strength\",\"intelligence\",\"charisma\",\"dexterity\",\"luck\"],\"width\":600,\"height\":400}\n  }\n  \n                        \n                        \n                      );\n      }\n    );/*]]>*/</script>\n    <div>\n      <span class=\"chart-total-item-count\"><p data-bind=\"text: value\"><script data-this=\"{&quot;valueId&quot;:&quot;anon1b921701783b2bbadb55eb51bce4a940&quot;,&quot;initialValue&quot;:&quot;4&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/\nreq(\n['observable', 'knockout'],\nfunction (O, ko) {\n  ko.applyBindings({\n      value: O.makeObservable(valueId, initialValue)\n    },\n    this\n  );\n});\n        /*]]>*/</script></p> entries total</span>\n      <span class=\"chart-sampling-warning\"><p data-bind=\"text: value\"><script data-this=\"{&quot;valueId&quot;:&quot;anon0984fdb5e58eaa1e28a270785900e9f5&quot;,&quot;initialValue&quot;:&quot;&quot;}\" type=\"text/x-scoped-javascript\">/*<![CDATA[*/\nreq(\n['observable', 'knockout'],\nfunction (O, ko) {\n  ko.applyBindings({\n      value: O.makeObservable(valueId, initialValue)\n    },\n    this\n  );\n});\n        /*]]>*/</script></p></span>\n      <div>\n      </div>\n    </div></div>"
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 13,
-      "time" : "Took: 371 milliseconds, at 2016-5-17 18:45"
-    } ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
-      "id" : "D13F130EA7BF47A68D710A4B662B2F54"
-    },
-    "cell_type" : "code",
-    "source" : "r.addAndApply(Array(Data(\"New Guy\",30,5,8,9,10)))",
-    "outputs" : [ {
-      "metadata" : { },
-      "data" : {
-        "text/html" : ""
-      },
-      "output_type" : "execute_result",
-      "execution_count" : 14,
-      "time" : "Took: 544 milliseconds, at 2016-5-17 18:45"
-    } ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : true,
       "id" : "AC7935948E01448AB19FBD84051FD9CE"
     },
     "cell_type" : "code",
@@ -124,7 +36,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "FB11A7E78979421B8958BC57F21920B4"
     },
     "cell_type" : "code",
@@ -134,7 +46,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "FB11A7E78979421B8958BC57F21920B4"
     },
     "cell_type" : "code",
@@ -144,7 +56,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "DAE45C28F3F947E48798868BF10DC2BE"
     },
     "cell_type" : "code",
@@ -154,7 +66,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "830EE83C78174D4294CC1D15B8F1F4C6"
     },
     "cell_type" : "code",
@@ -164,7 +76,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "5E96306C24764B9C8114493F9DF25FE5"
     },
     "cell_type" : "code",
@@ -174,7 +86,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "8EE29127ED11496E90C070C201CB749F"
     },
     "cell_type" : "code",
@@ -184,7 +96,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "966838B848304D32843D3DF984AD9866"
     },
     "cell_type" : "code",
@@ -194,7 +106,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "2638F50E3EFB40DCA0C514C62A859FE6"
     },
     "cell_type" : "code",
@@ -204,7 +116,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "5C829B1455B9458F8DCC47967252C508"
     },
     "cell_type" : "code",
@@ -214,7 +126,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "DDAAB92D0D4A441682C845AB83CEC8BD"
     },
     "cell_type" : "code",
@@ -224,7 +136,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "8309AAE1B4134B5294BA02C136F7C2F3"
     },
     "cell_type" : "code",
@@ -234,7 +146,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "65F47EB8A5C34BC184A795EBB1676AD9"
     },
     "cell_type" : "code",
@@ -244,7 +156,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "presentation" : {
         "tabs_state" : "{\n  \"tab_id\": \"#tab1191465375-0\"\n}",
         "pivot_chart_state" : "{\n  \"hiddenAttributes\": [],\n  \"menuLimit\": 200,\n  \"cols\": [],\n  \"rows\": [],\n  \"vals\": [],\n  \"exclusions\": {},\n  \"inclusions\": {},\n  \"unusedAttrsVertical\": 85,\n  \"autoSortUnusedAttrs\": false,\n  \"inclusionsInfo\": {},\n  \"aggregatorName\": \"Count\",\n  \"rendererName\": \"Table\"\n}"
@@ -258,7 +170,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "6B8CC2AD4F0A443C89E97AF8652FE7B1"
     },
     "cell_type" : "code",
@@ -268,7 +180,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "449E2A72D1BA4822B788C1D8378278FF"
     },
     "cell_type" : "code",
@@ -278,7 +190,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "2F00E520FB2C42458CE814138EFD733C"
     },
     "cell_type" : "code",
@@ -288,7 +200,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "A04628B268984661A0AD306F4DC9FE6D"
     },
     "cell_type" : "code",
@@ -298,7 +210,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "9327F3422B6A4B0C9386CD71021D6BFE"
     },
     "cell_type" : "code",
@@ -308,7 +220,7 @@
     "metadata" : {
       "trusted" : true,
       "input_collapsed" : false,
-      "collapsed" : true,
+      "collapsed" : false,
       "id" : "226EC1F277BB4447B1D9770DA1192655"
     },
     "cell_type" : "code",
