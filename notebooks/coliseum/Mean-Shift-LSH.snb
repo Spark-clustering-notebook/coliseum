@@ -11,7 +11,7 @@
     "trusted" : true,
     "customLocalRepo" : "${HOME}/.ivy2",
     "customRepos" : [ "spartakus % default % http://dl.bintray.com/spark-clustering-notebook/maven % maven" ],
-    "customDeps" : [ "spartakus %% neirest-neighbours-mean-shift-lsh % 1.0", "org.apache.sanselan % sanselan % 0.97-incubator" ],
+    "customDeps" : [ "spartakus %% neirest-neighbours-mean-shift-lsh % 1.3", "org.apache.sanselan % sanselan % 0.97-incubator" ],
     "customImports" : null,
     "customArgs" : null,
     "customSparkConf" : {
@@ -262,17 +262,7 @@
       "id" : "7DFA71ADF24645BE84F35C312F7FEDF9"
     },
     "cell_type" : "code",
-    "source" : "var model:msLsh.mean_shift_lsh_model = null",
-    "outputs" : [ ]
-  }, {
-    "metadata" : {
-      "trusted" : true,
-      "input_collapsed" : false,
-      "collapsed" : false,
-      "id" : "0BCAB11EADA84E689AD820ED34F1318A"
-    },
-    "cell_type" : "code",
-    "source" : "val logTrain = out\nlogTrain",
+    "source" : "var models:List[msLsh.Mean_shift_lsh_model] = Nil",
     "outputs" : [ ]
   }, {
     "metadata" : {
@@ -282,7 +272,17 @@
       "id" : "F03412F67D2F47BF9CA6008D27B5BC7F"
     },
     "cell_type" : "code",
-    "source" : "Form[Map[String,String]](\n  d = Map(\n    \"k\" -> \"60\",\n    \"threshold_cluster\" -> \"0.05\",\n    \"yStarIter\" -> \"10\",\n    \"cmin\" -> \"0\",\n    \"normalisation\" -> \"true\",\n    \"w\" -> \"1\",\n    \"nbseg\" -> \"100\",\n    \"nbblocs\" -> \"50\"\n  ), \n  mainTitle = \"Tune the model\", \n  paramsToData = identity[Map[String,String]], \n  dataToParams = identity[Map[String,String]]\n) { map =>\n  logTrain(\"Starting Model Training\")\n  model = meanShift.train(sparkContext,\n                            parsedData,\n                            map(\"k\").toInt,\n                            map(\"threshold_cluster\").toDouble,\n                            map(\"yStarIter\").toInt,\n                            map(\"cmin\").toInt,\n                            map(\"normalisation\").toBoolean,\n                            map(\"w\").toInt,\n                            map(\"nbseg\").toInt,\n                            map(\"nbblocs\").toInt,\n                            nbPart=defp\n                          )\n  logTrain(\"Model trained\")\n}",
+    "source" : "val logTrain = out\nval f = Form[Map[String,String]](\n  d = Map(\n    \"k\" -> \"60\",\n    \"threshold_cluster1\" -> \"0.05\",\n    \"threshold_cluster2\" -> \"0.05\",\n    \"yStarIter\" -> \"10\",\n    \"cmin\" -> \"0\",\n    \"normalisation\" -> \"true\",\n    \"w\" -> \"1\",\n    \"nbseg\" -> \"100\",\n    \"nbblocs1\" -> \"50\",\n    \"nbblocs2\" -> \"50\",\n    \"nbLabelIter\" -> \"5\"\n  ), \n  mainTitle = \"Tune the model\", \n  paramsToData = identity[Map[String,String]], \n  dataToParams = identity[Map[String,String]]\n) { map =>\n  logTrain(\"Starting Model Training\")\n  new Thread { override def run  = { \n      models = meanShift.train( sc = sparkContext,\n                                data = parsedData,\n                                k = map(\"k\").toInt,\n                                threshold_cluster1 = map(\"threshold_cluster1\").toDouble,\n                                threshold_cluster2 = map(\"threshold_cluster2\").toDouble,\n                                yStarIter = map(\"yStarIter\").toInt,\n                                cmin = map(\"cmin\").toInt,\n                                normalisation = map(\"normalisation\").toBoolean,\n                                w = map(\"w\").toInt,\n                                nbseg = map(\"nbseg\").toInt,\n                                nbblocs1 = map(\"nbblocs1\").toInt,\n                                nbblocs2 = map(\"nbblocs2\").toInt,\n                                nbLabelIter = map(\"nbLabelIter\").toInt,\n                                nbPart = defp,\n                                monitoring = true,\n                                fct = (s:String, a:Any) => logTrain(s + \" -- \" + a)\n                              ).toList\n      logTrain(\"Model trained\")\n    }\n  }.start\n}\n\n\nf ++ logTrain",
+    "outputs" : [ ]
+  }, {
+    "metadata" : {
+      "trusted" : true,
+      "input_collapsed" : false,
+      "collapsed" : false,
+      "id" : "6E684196F09C408F96A71403D43A0976"
+    },
+    "cell_type" : "code",
+    "source" : "val model = models.last",
     "outputs" : [ ]
   }, {
     "metadata" : {
