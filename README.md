@@ -45,6 +45,8 @@ source create.sh
 > docker-machine start docker-vm
 > docker-machine env docker-vm
 > eval $(docker-machine env docker-vm)
+>
+> docker-machine ip docker-vm
 > ```
 
 
