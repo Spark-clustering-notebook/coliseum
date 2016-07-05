@@ -40,8 +40,7 @@ source create.sh
 > ```
 >Or
 >```sh
-> docker-machine create -d virtualbox --virtualbox-import-boot2docker-vm boot2docker-vm docker-vm
-> https://docs.docker.com/machine/migrate-to-machine/
+> See : https://docs.docker.com/machine/migrate-to-machine/
 > docker-machine start docker-vm
 > docker-machine env docker-vm
 > eval $(docker-machine env docker-vm)
