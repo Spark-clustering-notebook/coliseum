@@ -38,7 +38,7 @@ RUN \
 RUN \
  cd /root \
 ## && wget https://s3.eu-central-1.amazonaws.com/spark-notebook/traning/confluent-1.0-2.10.4.tar.gz \
- && wget https://s3.eu-central-1.amazonaws.com/spark-notebook/tgz/spark-notebook-0.7.0-pre2-scala-2.10.5-spark-1.6.2-hadoop-2.7.2-with-hive-with-parquet.tgz
+ && wget https://s3.eu-central-1.amazonaws.com/spark-notebook/tgz/spark-notebook-0.7.0-pre2-scala-2.10.5-spark-1.6.2-hadoop-2.7.2-with-hive-with-parquet.tgz \
  && tar xzf confluent-1.0-2.10.4.tar.gz \
  && rm confluent-1.0-2.10.4.tar.gz
 
