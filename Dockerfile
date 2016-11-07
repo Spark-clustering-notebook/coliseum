@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 
 ENV SCALA_VERSION=2.10.5
-ENV SPARK_VERSION=1.6.0
+ENV SPARK_VERSION=1.6.2
 
 EXPOSE 80 4042 9160 9042 9200 7077 38080 38081 6060 6061 8090 8099 10000 50070 50090 9092 6066 9000 19999 6379 6081 7474 8787 5601 8989 7979 4040
 
@@ -37,7 +37,8 @@ RUN \
 # Apache Kafka (Confluent Distribution)
 RUN \
  cd /root \
- && wget https://s3.eu-central-1.amazonaws.com/spark-notebook/traning/confluent-1.0-2.10.4.tar.gz \
+## && wget https://s3.eu-central-1.amazonaws.com/spark-notebook/traning/confluent-1.0-2.10.4.tar.gz \
+ && wget https://s3.eu-central-1.amazonaws.com/spark-notebook/tgz/spark-notebook-0.7.0-pre2-scala-2.10.5-spark-1.6.2-hadoop-2.7.2-with-hive-with-parquet.tgz
  && tar xzf confluent-1.0-2.10.4.tar.gz \
  && rm confluent-1.0-2.10.4.tar.gz
 
