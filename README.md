@@ -118,6 +118,6 @@ docker run \
            --rm -it -m 8g \
            -p 19000:9000 \
            -p 14040:4040 -p 14041:14041 -p 14042:4042 -p 14043:14043 \
-           spartakus/coliseum:0.3.1 \
+           spartakus/coliseum:0.3.2 \
            bash
 ```
