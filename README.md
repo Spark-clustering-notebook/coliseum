@@ -7,7 +7,7 @@ See (https://hub.docker.com/r/spartakus/coliseum/) for online image.
 First you need to pull the docker image locally.
 
 ```sh
-docker pull spartakus/coliseum:0.3.1
+docker pull spartakus/coliseum:0.3.2
 ```
 
 Then you can run the container with these parameters:
@@ -17,7 +17,7 @@ Then you can run the container with these parameters:
 * `--net=host` means that the container isn't using a dedicated (virtalized) network, but the current host one (on Mac this is the networking used by the virtual machine though)
 
 ```sh
-docker run --rm -it -m 8g --net=host spartakus/coliseum:0.3.1 bash
+docker run --rm -it -m 8g --net=host spartakus/coliseum:0.3.2 bash
 ```
 
 > Note for developers, check the **Development** section below.
@@ -54,7 +54,7 @@ Open browser at [http://localhost:9000/tree/coliseum](http://localhost:9000/tree
 # Development
 ## Build
 ```bash
-docker build -t spartakus/coliseum:0.3.1 .
+docker build -t spartakus/coliseum:0.3.2 .
 ```
 
 ## Dependencies
