@@ -1,0 +1,216 @@
+
+a:link, a:visited {
+  color: #777;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #666;
+}
+
+blockquote {
+  margin: 0;
+}
+
+blockquote:before {
+  content: "“";
+  position: absolute;
+  left: -.4em;
+}
+
+blockquote:after {
+  content: "”";
+  position: absolute;
+}
+
+body > ul {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 64px;
+}
+
+h1, h2, h3 {
+  font-weight: inherit;
+  margin: 0;
+}
+
+h2, h3 {
+  text-align: right;
+  font-size: inherit;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+h2 {
+  font-size: 24px;
+  position: absolute;
+}
+
+h3 {
+  bottom: -20px;
+  font-size: 18px;
+}
+
+.invert {
+  background: #1f1f1f;
+  color: #dcdccc;
+}
+
+.invert h2, .invert h3 {
+  color: #7f9f7f;
+}
+
+.string, .regexp {
+  color: #f39;
+}
+
+.keyword {
+  color: #00c;
+}
+
+.comment {
+  color: #777;
+  font-style: oblique;
+}
+
+.number {
+  color: #369;
+}
+
+.class, .special {
+  color: #1181B8;
+}
+
+body > svg {
+  position: absolute;
+  top: -80px;
+  left: -160px;
+}
+
+
+
+svg {
+  font-size: 14px;
+}
+
+.axisScatter {
+  shape-rendering: crispEdges;
+}
+
+.axisScatter line {
+  stroke: #ddd;
+  stroke-width: .5px;
+}
+
+.axisScatter path {
+  display: none;
+}
+
+rect.extent {
+  fill: #000;
+  fill-opacity: .125;
+  stroke: #fff;
+}
+
+rect.frame {
+  fill: #fff;
+  fill-opacity: .7;
+  stroke: #aaa;
+}
+
+circle {
+  fill: #ccc;
+  fill-opacity: .5;
+}
+
+.legend circle {
+  fill-opacity: 1;
+}
+
+.legend text {
+  font-size: 18px;
+  font-style: oblique;
+}
+
+.cell text {
+  pointer-events: none;
+}
+
+
+
+._0 {
+  fill: #5d8aa8;
+}
+._1 {
+  fill: #000000;
+}
+._2 {
+  fill: #e32636;
+}
+._3 {
+  fill: #efdecd;
+}
+._4 {
+  fill: #e52b50;
+}
+._5 {
+  fill: #ffbf00;
+}
+._6 {
+  fill: #ff033e;
+}
+._7 {
+  fill: #9966cc;
+}
+._8 {
+  fill: #a4c639;
+}
+._9 {
+  fill: #7FFFD4;
+}
+._10 {
+  fill: #cd9575;
+}
+._11 {
+  fill: #915c83;
+}
+._12 {
+  fill: #faebd7;
+}
+._13 {
+  fill: #008000;
+}
+._14 {
+  fill: #8db600;
+}
+._15 {
+  fill: #fbceb1;
+}
+._16 {
+  fill: #00ffff;
+}
+._17 {
+  fill: #7fffd4;
+}
+._18 {
+  fill: #4b5320;
+}
+._19 {
+  fill: #e9d66b;
+}
+._20 {
+  fill: #b2beb5;
+}
+._21 {
+  fill: #87a96b;
+}
+._22 {
+  fill: #ff9966;
+}
+._23 {
+  fill: #a52a2a;
+}
